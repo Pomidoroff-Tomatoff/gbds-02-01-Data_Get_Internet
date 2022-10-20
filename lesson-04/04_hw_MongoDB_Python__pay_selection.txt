@@ -3,114 +3,23 @@ PAY-LEVEL:360000
   2  300000-370000  руб.  Разработчик C++
   3    6500-  6500  USD   Team Lead Python (relocation EU)
   4  400000-450000  руб.  Python Team Lead / Руководитель backend разработки (в аккредитованную ИТ компанию)
-  5    9500-  9500  USD   Manager, Site Reliability Engineering (to Canada/Serbia)
-  6  400000-400000  руб.  DevOps архитектор
-  7  400000-400000  руб.  Системный архитектор
-  8    7000-  7000  USD   Data Analyst - NLP (to Canada/Serbia)
-  9    8000-  8000  USD   Site Reliability Engineer (to Canada/Serbia)
- 10    8000-  8000  USD   Senior DevOps Engineer - Automation (to Canada/Serbia)
- 11   10000- 10000  USD   Head of DevOps (Dubai)
- 12    5500-  6500  USD   Senior Software Engineer (DevOps) – Remote
- 13  250000-400000  руб.  Middle/Senior DevOps engineer
- 14  250000-450000  руб.  Fullstack техлид (Python)
- 15    5500-  7200  USD   Product Owner in QA
- 16  400000-400000  руб.  Quantitative Developer
- 17  400000-700000  руб.  Senior Software Engineer
- 18  100000-400000  руб.  Программист-разработчик Middle\Senior на Python
- 19  600000-600000  руб.  Разработчик Solidity/Разработчик Rust/Разработчик Go/Разработчик python(удаленно)
- 20       0-400000  руб.  Lead / Senior C# разработчик (.net, back-end)
- 21  400000-700000  руб.  Программист С++ Senior
- 22  300000-500000  руб.  Разработчик C# / Python
- 23    5000-  9000  USD   Senior Backend Engineer (Remote, to Canada/USA)
-PAY-LEVEL:251000
-  1  250000-350000  руб.  Старший продуктовый аналитик в команду «Поиск заказов»
-  2    4000-  6000  USD   Разработчик встраиваемого/бортового ПО (C++) (релокация в Dubai)
-  3    6000-  8000  USD   Разработчик C++ (релокация в Dubai)
-  4  300000-300000  руб.  Lead Product Analyst (remote)
-  5       0-350000  руб.  Senior Python Developer (в аккредитованную ИТ компанию)
-  6  300000-370000  руб.  Разработчик C++
-  7    6500-  6500  USD   Team Lead Python (relocation EU)
-  8  200000-300000  руб.  Team Lead Unreal Engine / C++
-  9    4000-  4500  USD   Senior Scoring Risk analyst Mexico
- 10       0-  5500  USD   Senior Backend Engineer
- 11  400000-450000  руб.  Python Team Lead / Руководитель backend разработки (в аккредитованную ИТ компанию)
- 12  250000-300000  руб.  Middle+ Python developer Web3
- 13       0-260000  руб.  DevOps\SRE engineer
- 14       0-280000  руб.  Python Developer
- 15       0-300000  руб.  Продакт-менеджер
- 16  250000-350000  руб.  SRE-инженер
- 17  250000-350000  руб.  Java разработчик Middle+/Senior
- 18  200000-260000  руб.  Ведущий Back-end разработчик
- 19  150000-300000  руб.  Инженер-программист C/C++ (Embedded linux)
- 20    9500-  9500  USD   Manager, Site Reliability Engineering (to Canada/Serbia)
- 21  400000-400000  руб.  DevOps архитектор
- 22  400000-400000  руб.  Системный архитектор
- 23    7000-  7000  USD   Data Analyst - NLP (to Canada/Serbia)
- 24    8000-  8000  USD   Site Reliability Engineer (to Canada/Serbia)
- 25    4500-  4500  USD   Data Analyst (Remote)
- 26    8000-  8000  USD   Senior DevOps Engineer - Automation (to Canada/Serbia)
- 27  300000-300000  руб.  DevOps / SRE
- 28    3000-  4500  USD   Risk manager
- 29  280000-340000  руб.  Backend-разработчик Python middle+ / senior
- 30  200000-300000  руб.  Пентестер iOS разработчик
- 31  300000-300000  руб.  Quantitative Researcher
- 32  330000-330000  руб.  Backend Developer (Go) (to Lisbon)
- 33  300000-300000  руб.  Программист Python (Senior)
- 34   10000- 10000  USD   Head of DevOps (Dubai)
- 35       0-330000  руб.  Product Analyst
- 36    4500-  5000  USD   Senior Data Analyst
- 37    5500-  6500  USD   Senior Software Engineer (DevOps) – Remote
- 38  150000-300000  руб.  Backend-разработчик PHP (middle/senior)
- 39    2500-  4500  USD   Senior BackEnd Developer
- 40  200000-350000  руб.  Senior Frontend Angular разработчик
- 41  350000-350000  руб.  Product Analytics Lead
- 42  250000-400000  руб.  Middle/Senior DevOps engineer
- 43  280000-340000  руб.  SRE/Системный администратор Linux
- 44    5000-  5000  USD   Веб VoIP инженер (SIP, Asterisk, Kamailio)
- 45  250000-350000  руб.  DevOps Engineer
- 46  250000-350000  руб.  DevOps Engineer
- 47  150000-350000  руб.  DevOps engineer/Системный администратор
- 48  200000-300000  руб.  Старший сетевой инженер / руководитель отдела
- 49  250000-450000  руб.  Fullstack техлид (Python)
- 50  200000-350000  руб.  Python Developer (Remote)
- 51       0-280000  руб.  Системный аналитик
- 52  250000-350000  руб.  Senior Developer
- 53  250000-300000  руб.  Senior Python разработчик
- 54    2500-  4500  USD   DevOps Engineer
- 55       0-350000  руб.  Data Analyst (ML)
- 56  150000-300000  руб.  PHP Developer / PHP Разработчик
- 57    5500-  7200  USD   Product Owner in QA
- 58  250000-350000  руб.  Разработчик (Deckhouse)
- 59  400000-400000  руб.  Quantitative Developer
- 60  400000-700000  руб.  Senior Software Engineer
- 61  250000-350000  руб.  Software Engineer
- 62  100000-400000  руб.  Программист-разработчик Middle\Senior на Python
- 63       0-350000  руб.  Senior Data Engineer / MLOps
- 64  600000-600000  руб.  Разработчик Solidity/Разработчик Rust/Разработчик Go/Разработчик python(удаленно)
- 65  200000-300000  руб.  Разработчик Perl
- 66  300000-300000  руб.  Lead DevOps engineer
- 67  250000-300000  руб.  Lead Python разработчик
- 68    3000-  5000  USD   Quantitative Strategist - DeFi
- 69       0-400000  руб.  Lead / Senior C# разработчик (.net, back-end)
- 70  400000-700000  руб.  Программист С++ Senior
- 71  300000-500000  руб.  Разработчик C# / Python
- 72       0-300000  руб.  Ведущий системный аналитик
- 73    5000-  9000  USD   Senior Backend Engineer (Remote, to Canada/USA)
- 74  210000-360000  руб.  Backend Python Developer
- 75       0-350000  руб.  Разработчик C (удаленная работа)
- 76  210000-300000  руб.  Senior Python developer
-PAY-LEVEL:400000
-  1    6000-  8000  USD   Разработчик C++ (релокация в Dubai)
-  2  400000-450000  руб.  Python Team Lead / Руководитель backend разработки (в аккредитованную ИТ компанию)
-  3    9500-  9500  USD   Manager, Site Reliability Engineering (to Canada/Serbia)
-  4    7000-  7000  USD   Data Analyst - NLP (to Canada/Serbia)
-  5    8000-  8000  USD   Site Reliability Engineer (to Canada/Serbia)
-  6    8000-  8000  USD   Senior DevOps Engineer - Automation (to Canada/Serbia)
-  7   10000- 10000  USD   Head of DevOps (Dubai)
-  8  250000-450000  руб.  Fullstack техлид (Python)
-  9    5500-  7200  USD   Product Owner in QA
- 10  400000-700000  руб.  Senior Software Engineer
- 11  600000-600000  руб.  Разработчик Solidity/Разработчик Rust/Разработчик Go/Разработчик python(удаленно)
- 12  400000-700000  руб.  Программист С++ Senior
- 13  300000-500000  руб.  Разработчик C# / Python
- 14    5000-  9000  USD   Senior Backend Engineer (Remote, to Canada/USA)
+  5       0- 10000  EUR   C++ Developer (Berlin)
+  6    9500-  9500  USD   Manager, Site Reliability Engineering (to Canada/Serbia)
+  7  400000-400000  руб.  DevOps архитектор
+  8  400000-400000  руб.  Системный архитектор
+  9    7000-  7000  USD   Data Analyst - NLP (to Canada/Serbia)
+ 10    8000-  8000  USD   Site Reliability Engineer (to Canada/Serbia)
+ 11    8000-  8000  USD   Senior DevOps Engineer - Automation (to Canada/Serbia)
+ 12   10000- 10000  USD   Head of DevOps (Dubai)
+ 13    5500-  6500  USD   Senior Software Engineer (DevOps) – Remote
+ 14  250000-400000  руб.  Middle/Senior DevOps engineer
+ 15  250000-450000  руб.  Fullstack техлид (Python)
+ 16    5500-  7200  USD   Product Owner in QA
+ 17  400000-400000  руб.  Quantitative Developer
+ 18  400000-700000  руб.  Senior Software Engineer
+ 19  100000-400000  руб.  Программист-разработчик Middle\Senior на Python
+ 20  600000-600000  руб.  Разработчик Solidity/Разработчик Rust/Разработчик Go/Разработчик python(удаленно)
+ 21       0-400000  руб.  Lead / Senior C# разработчик (.net, back-end)
+ 22  400000-700000  руб.  Программист С++ Senior
+ 23  300000-500000  руб.  Разработчик C# / Python
+ 24    5000-  9000  USD   Senior Backend Engineer (Remote, to Canada/USA)
