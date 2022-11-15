@@ -1,4 +1,4 @@
-Парсим страницу списка книг  1, url: http://books.toscrape.com/
+﻿Парсим страницу списка книг  1, url: http://books.toscrape.com/
 Парсим страницу списка книг  2, url: http://books.toscrape.com/catalogue/page-2.html
 Парсим страницу списка книг  3, url: http://books.toscrape.com/catalogue/page-3.html
 Парсим страницу списка книг  4, url: http://books.toscrape.com/catalogue/page-4.html

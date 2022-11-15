@@ -49,12 +49,37 @@ class BooksPagesSpider(scrapy.Spider):
 
     def parse_book(self, response):
 
-        # Парсим данные о книге на её индивидуальной страницы
+        # Парсим данные о книге на её индивидуальной странице
 
         article = response.xpath('//article[@class="product_page"]')
+        table_data = response.xpath('//article[@class="product_page"]/table[contains(@class, "table")]')
+
         yield {
             'title':
-                article.xpath('.//div[contains(@class, "product_main")]/h1/text()').get(),
+                   article.xpath('.//div[contains(@class, "product_main")]/h1/text()').get(),
+            'price':
+                   article.xpath('.//div[contains(@class, "product_main")]/p[@class="price_color"]/text()').get(),
+            'in_stock': "".join(
+                    article.xpath('.//div[contains(@class, "product_main")]/p[@class="instock availability"]/text()').getall()
+                ).strip(),
             'image': response.urljoin(
-                article.xpath('.//div[@id="product_gallery"]//div[@class ="item active"]/img/@src').get()),
+                    article.xpath('.//div[@id="product_gallery"]//div[@class ="item active"]/img/@src').get()
+                ),
+            'product_description':
+                article.xpath('./div[@id="product_description"]/following-sibling::p[1]/text()').get(),
+                # article.xpath('./p/text()').get(),  # более простой вариант
+            'upc':
+                table_data.xpath('.//th[contains(text(), "UPC")]/following-sibling::td[1]/text()').get(),
+            'product_type':
+                table_data.xpath('.//th[contains(text(), "Product Type")]/following-sibling::td[1]/text()').get(),
+            'price_exclude_tax':
+                table_data.xpath('.//th[contains(text(), "Price (excl. tax)")]/following-sibling::td[1]/text()').get(),
+            'price_include_tax':
+                table_data.xpath('.//th[contains(text(), "Price (incl. tax)")]/following-sibling::td[1]/text()').get(),
+            'tax':
+                table_data.xpath('.//th[contains(text(), "Tax")]/following-sibling::td[1]/text()').get(),
+            'availability':
+                table_data.xpath('.//th[text()="Availability"]/following-sibling::td[1]/text()').get(),
+            'number_of_reviews':
+                table_data.xpath('.//th[text()="Number of reviews"]/following-sibling::td[1]/text()').get(),
         }
