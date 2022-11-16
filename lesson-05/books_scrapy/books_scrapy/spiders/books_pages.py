@@ -7,6 +7,13 @@ class BooksPagesSpider(scrapy.Spider):
     allowed_domains = ['books.toscrape.com']
     start_urls = ['http://books.toscrape.com/']
 
+    custom_settings = {
+        # LOG_LEVEL
+        # https: // docs.scrapy.org / en / latest / topics / settings.html  # std-setting-LOG_LEVEL
+        # In list: CRITICAL, ERROR, WARNING, INFO, DEBUG (https://docs.scrapy.org/en/latest/topics/settings.html#std-setting-LOG_LEVEL)
+        'LOG_LEVEL': 'ERROR',
+    }
+
     count_page = 0  # добавленная переменная для подсчёта количества обработанных страниц
     log_file_name = "books_pages__log.txt"
 
@@ -52,22 +59,23 @@ class BooksPagesSpider(scrapy.Spider):
         # Парсим данные о книге на её индивидуальной странице
 
         article = response.xpath('//article[@class="product_page"]')
-        table_data = response.xpath('//article[@class="product_page"]/table[contains(@class, "table")]')
+        table_data = article.xpath('./table[contains(@class, "table")]')
 
         yield {
             'title':
-                   article.xpath('.//div[contains(@class, "product_main")]/h1/text()').get(),
+                article.xpath('.//div[contains(@class, "product_main")]/h1/text()').get(),
             'price':
-                   article.xpath('.//div[contains(@class, "product_main")]/p[@class="price_color"]/text()').get(),
+                article.xpath('.//div[contains(@class, "product_main")]/p[@class="price_color"]/text()').get(),
             'in_stock': "".join(
-                    article.xpath('.//div[contains(@class, "product_main")]/p[@class="instock availability"]/text()').getall()
+                article.xpath('.//div[contains(@class, "product_main")]/p[@class="instock availability"]/text()').getall()
                 ).strip(),
             'image': response.urljoin(
-                    article.xpath('.//div[@id="product_gallery"]//div[@class ="item active"]/img/@src').get()
+                article.xpath('.//div[@id="product_gallery"]//div[@class ="item active"]/img/@src').get()
                 ),
             'product_description':
                 article.xpath('./div[@id="product_description"]/following-sibling::p[1]/text()').get(),
-                # article.xpath('./p/text()').get(),  # более простой вариант
+                # article.xpath('./p/text()').get(),  # простой, но не привязанный к ID, вариант
+
             'upc':
                 table_data.xpath('.//th[contains(text(), "UPC")]/following-sibling::td[1]/text()').get(),
             'product_type':
