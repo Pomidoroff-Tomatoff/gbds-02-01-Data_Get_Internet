@@ -1,5 +1,6 @@
 import scrapy
-import sys    # для записи лога
+import pymongo  # для записи документов в базу данных MongoDB
+import sys      # для записи лога
 
 
 class BooksPagesSpider(scrapy.Spider):
@@ -11,11 +12,24 @@ class BooksPagesSpider(scrapy.Spider):
         # LOG_LEVEL
         # https: // docs.scrapy.org / en / latest / topics / settings.html  # std-setting-LOG_LEVEL
         # In list: CRITICAL, ERROR, WARNING, INFO, DEBUG (https://docs.scrapy.org/en/latest/topics/settings.html#std-setting-LOG_LEVEL)
-        'LOG_LEVEL': 'ERROR',
+        'LOG_LEVEL': 'WARNING',
     }
 
-    count_page = 0  # добавленная переменная для подсчёта количества обработанных страниц
+    # log-файл самодельный
+    count_page = 0
     log_file_name = "books_pages__log.txt"
+
+    # Параметры базы данных MongoDB для записи полученных данных
+    db_address = "mongodb://127.0.0.1:27017"
+    db_name = "book_toscrape"
+    db_collection_name = "books_pages"
+
+    def insert_mongodb(self, doc_item: dict):
+        with pymongo.MongoClient(self.db_address) as client:
+            base = client[self.db_name]
+            coll = base[self.db_collection_name]
+            id_ins = coll.insert_one(dict(doc_item)).inserted_id
+        return id_ins
 
     def parse(self, response, **kwargs):
 
@@ -61,33 +75,34 @@ class BooksPagesSpider(scrapy.Spider):
         article = response.xpath('//article[@class="product_page"]')
         table_data = article.xpath('./table[contains(@class, "table")]')
 
-        yield {
-            'title':
-                article.xpath('.//div[contains(@class, "product_main")]/h1/text()').get(),
-            'price':
-                article.xpath('.//div[contains(@class, "product_main")]/p[@class="price_color"]/text()').get(),
-            'in_stock': "".join(
-                article.xpath('.//div[contains(@class, "product_main")]/p[@class="instock availability"]/text()').getall()
-                ).strip(),
-            'image': response.urljoin(
-                article.xpath('.//div[@id="product_gallery"]//div[@class ="item active"]/img/@src').get()
-                ),
-            'product_description':
-                article.xpath('./div[@id="product_description"]/following-sibling::p[1]/text()').get(),
-                # article.xpath('./p/text()').get(),  # простой, но не привязанный к ID, вариант
+        item = {}
+        item['title'] = \
+            article.xpath('.//div[contains(@class, "product_main")]/h1/text()').get()
+        item['price'] = \
+            article.xpath('.//div[contains(@class, "product_main")]/p[@class="price_color"]/text()').get()
+        item['in_stock'] = "".join(
+            article.xpath('.//div[contains(@class, "product_main")]/p[@class="instock availability"]/text()').getall()
+        ).strip()
+        item['image'] = response.urljoin(
+            article.xpath('.//div[@id="product_gallery"]//div[@class ="item active"]/img/@src').get()
+        )
+        item['product_description'] = \
+            article.xpath('./div[@id="product_description"]/following-sibling::p[1]/text()').get()
+        item['upc'] = \
+            table_data.xpath('.//th[contains(text(), "UPC")]/following-sibling::td[1]/text()').get()
+        item['product_type'] = \
+            table_data.xpath('.//th[contains(text(), "Product Type")]/following-sibling::td[1]/text()').get()
+        item['price_exclude_tax'] = \
+            table_data.xpath('.//th[contains(text(), "Price (excl. tax)")]/following-sibling::td[1]/text()').get()
+        item['price_include_tax'] = \
+            table_data.xpath('.//th[contains(text(), "Price (incl. tax)")]/following-sibling::td[1]/text()').get()
+        item['tax'] = \
+            table_data.xpath('.//th[contains(text(), "Tax")]/following-sibling::td[1]/text()').get()
+        item['availability'] = \
+            table_data.xpath('.//th[text()="Availability"]/following-sibling::td[1]/text()').get()
+        item['number_of_reviews'] = \
+            table_data.xpath('.//th[text()="Number of reviews"]/following-sibling::td[1]/text()').get()
 
-            'upc':
-                table_data.xpath('.//th[contains(text(), "UPC")]/following-sibling::td[1]/text()').get(),
-            'product_type':
-                table_data.xpath('.//th[contains(text(), "Product Type")]/following-sibling::td[1]/text()').get(),
-            'price_exclude_tax':
-                table_data.xpath('.//th[contains(text(), "Price (excl. tax)")]/following-sibling::td[1]/text()').get(),
-            'price_include_tax':
-                table_data.xpath('.//th[contains(text(), "Price (incl. tax)")]/following-sibling::td[1]/text()').get(),
-            'tax':
-                table_data.xpath('.//th[contains(text(), "Tax")]/following-sibling::td[1]/text()').get(),
-            'availability':
-                table_data.xpath('.//th[text()="Availability"]/following-sibling::td[1]/text()').get(),
-            'number_of_reviews':
-                table_data.xpath('.//th[text()="Number of reviews"]/following-sibling::td[1]/text()').get(),
-        }
+        self.insert_mongodb(item)
+
+        yield item

@@ -18,7 +18,7 @@ class BooksSpider(scrapy.Spider):
         #    б. По этому списку объектов-книг проведём цикл с получением данных по каждой книге
 
         self.count_page = self.count_page + 1
-        with open(self.log_file_name, "a", encoding="utf-8") as file_log:
+        with open("books.log.txt", "a", encoding="utf-8") as file_log:
             for output_strim in [sys.stdout, file_log]:
                 print(f"Парсим страницу списка книг {self.count_page:>2}, url: {response.url}", file=output_strim)
 
