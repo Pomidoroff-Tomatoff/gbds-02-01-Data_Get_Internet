@@ -1,50 +1,50 @@
-Парсим страницу списка книг  1, url: http://books.toscrape.com/
-Парсим страницу списка книг  2, url: http://books.toscrape.com/catalogue/page-2.html
-Парсим страницу списка книг  3, url: http://books.toscrape.com/catalogue/page-3.html
-Парсим страницу списка книг  4, url: http://books.toscrape.com/catalogue/page-4.html
-Парсим страницу списка книг  5, url: http://books.toscrape.com/catalogue/page-5.html
-Парсим страницу списка книг  6, url: http://books.toscrape.com/catalogue/page-6.html
-Парсим страницу списка книг  7, url: http://books.toscrape.com/catalogue/page-7.html
-Парсим страницу списка книг  8, url: http://books.toscrape.com/catalogue/page-8.html
-Парсим страницу списка книг  9, url: http://books.toscrape.com/catalogue/page-9.html
-Парсим страницу списка книг 10, url: http://books.toscrape.com/catalogue/page-10.html
-Парсим страницу списка книг 11, url: http://books.toscrape.com/catalogue/page-11.html
-Парсим страницу списка книг 12, url: http://books.toscrape.com/catalogue/page-12.html
-Парсим страницу списка книг 13, url: http://books.toscrape.com/catalogue/page-13.html
-Парсим страницу списка книг 14, url: http://books.toscrape.com/catalogue/page-14.html
-Парсим страницу списка книг 15, url: http://books.toscrape.com/catalogue/page-15.html
-Парсим страницу списка книг 16, url: http://books.toscrape.com/catalogue/page-16.html
-Парсим страницу списка книг 17, url: http://books.toscrape.com/catalogue/page-17.html
-Парсим страницу списка книг 18, url: http://books.toscrape.com/catalogue/page-18.html
-Парсим страницу списка книг 19, url: http://books.toscrape.com/catalogue/page-19.html
-Парсим страницу списка книг 20, url: http://books.toscrape.com/catalogue/page-20.html
-Парсим страницу списка книг 21, url: http://books.toscrape.com/catalogue/page-21.html
-Парсим страницу списка книг 22, url: http://books.toscrape.com/catalogue/page-22.html
-Парсим страницу списка книг 23, url: http://books.toscrape.com/catalogue/page-23.html
-Парсим страницу списка книг 24, url: http://books.toscrape.com/catalogue/page-24.html
-Парсим страницу списка книг 25, url: http://books.toscrape.com/catalogue/page-25.html
-Парсим страницу списка книг 26, url: http://books.toscrape.com/catalogue/page-26.html
-Парсим страницу списка книг 27, url: http://books.toscrape.com/catalogue/page-27.html
-Парсим страницу списка книг 28, url: http://books.toscrape.com/catalogue/page-28.html
-Парсим страницу списка книг 29, url: http://books.toscrape.com/catalogue/page-29.html
-Парсим страницу списка книг 30, url: http://books.toscrape.com/catalogue/page-30.html
-Парсим страницу списка книг 31, url: http://books.toscrape.com/catalogue/page-31.html
-Парсим страницу списка книг 32, url: http://books.toscrape.com/catalogue/page-32.html
-Парсим страницу списка книг 33, url: http://books.toscrape.com/catalogue/page-33.html
-Парсим страницу списка книг 34, url: http://books.toscrape.com/catalogue/page-34.html
-Парсим страницу списка книг 35, url: http://books.toscrape.com/catalogue/page-35.html
-Парсим страницу списка книг 36, url: http://books.toscrape.com/catalogue/page-36.html
-Парсим страницу списка книг 37, url: http://books.toscrape.com/catalogue/page-37.html
-Парсим страницу списка книг 38, url: http://books.toscrape.com/catalogue/page-38.html
-Парсим страницу списка книг 39, url: http://books.toscrape.com/catalogue/page-39.html
-Парсим страницу списка книг 40, url: http://books.toscrape.com/catalogue/page-40.html
-Парсим страницу списка книг 41, url: http://books.toscrape.com/catalogue/page-41.html
-Парсим страницу списка книг 42, url: http://books.toscrape.com/catalogue/page-42.html
-Парсим страницу списка книг 43, url: http://books.toscrape.com/catalogue/page-43.html
-Парсим страницу списка книг 44, url: http://books.toscrape.com/catalogue/page-44.html
-Парсим страницу списка книг 45, url: http://books.toscrape.com/catalogue/page-45.html
-Парсим страницу списка книг 46, url: http://books.toscrape.com/catalogue/page-46.html
-Парсим страницу списка книг 47, url: http://books.toscrape.com/catalogue/page-47.html
-Парсим страницу списка книг 48, url: http://books.toscrape.com/catalogue/page-48.html
-Парсим страницу списка книг 49, url: http://books.toscrape.com/catalogue/page-49.html
-Парсим страницу списка книг 50, url: http://books.toscrape.com/catalogue/page-50.html
+2022-11-18; 17.25.33,  pass: 0001,  url: https://books.toscrape.com/
+2022-11-18; 17.25.46,  pass: 0002,  url: https://books.toscrape.com/catalogue/page-2.html
+2022-11-18; 17.25.59,  pass: 0003,  url: https://books.toscrape.com/catalogue/page-3.html
+2022-11-18; 17.26.12,  pass: 0004,  url: https://books.toscrape.com/catalogue/page-4.html
+2022-11-18; 17.26.24,  pass: 0005,  url: https://books.toscrape.com/catalogue/page-5.html
+2022-11-18; 17.26.37,  pass: 0006,  url: https://books.toscrape.com/catalogue/page-6.html
+2022-11-18; 17.26.50,  pass: 0007,  url: https://books.toscrape.com/catalogue/page-7.html
+2022-11-18; 17.27.04,  pass: 0008,  url: https://books.toscrape.com/catalogue/page-8.html
+2022-11-18; 17.27.17,  pass: 0009,  url: https://books.toscrape.com/catalogue/page-9.html
+2022-11-18; 17.27.30,  pass: 0010,  url: https://books.toscrape.com/catalogue/page-10.html
+2022-11-18; 17.27.42,  pass: 0011,  url: https://books.toscrape.com/catalogue/page-11.html
+2022-11-18; 17.27.55,  pass: 0012,  url: https://books.toscrape.com/catalogue/page-12.html
+2022-11-18; 17.28.09,  pass: 0013,  url: https://books.toscrape.com/catalogue/page-13.html
+2022-11-18; 17.28.21,  pass: 0014,  url: https://books.toscrape.com/catalogue/page-14.html
+2022-11-18; 17.28.34,  pass: 0015,  url: https://books.toscrape.com/catalogue/page-15.html
+2022-11-18; 17.28.46,  pass: 0016,  url: https://books.toscrape.com/catalogue/page-16.html
+2022-11-18; 17.28.59,  pass: 0017,  url: https://books.toscrape.com/catalogue/page-17.html
+2022-11-18; 17.29.12,  pass: 0018,  url: https://books.toscrape.com/catalogue/page-18.html
+2022-11-18; 17.29.25,  pass: 0019,  url: https://books.toscrape.com/catalogue/page-19.html
+2022-11-18; 17.29.38,  pass: 0020,  url: https://books.toscrape.com/catalogue/page-20.html
+2022-11-18; 17.29.50,  pass: 0021,  url: https://books.toscrape.com/catalogue/page-21.html
+2022-11-18; 17.30.03,  pass: 0022,  url: https://books.toscrape.com/catalogue/page-22.html
+2022-11-18; 17.30.16,  pass: 0023,  url: https://books.toscrape.com/catalogue/page-23.html
+2022-11-18; 17.30.30,  pass: 0024,  url: https://books.toscrape.com/catalogue/page-24.html
+2022-11-18; 17.30.42,  pass: 0025,  url: https://books.toscrape.com/catalogue/page-25.html
+2022-11-18; 17.30.55,  pass: 0026,  url: https://books.toscrape.com/catalogue/page-26.html
+2022-11-18; 17.31.08,  pass: 0027,  url: https://books.toscrape.com/catalogue/page-27.html
+2022-11-18; 17.31.20,  pass: 0028,  url: https://books.toscrape.com/catalogue/page-28.html
+2022-11-18; 17.31.32,  pass: 0029,  url: https://books.toscrape.com/catalogue/page-29.html
+2022-11-18; 17.31.45,  pass: 0030,  url: https://books.toscrape.com/catalogue/page-30.html
+2022-11-18; 17.31.58,  pass: 0031,  url: https://books.toscrape.com/catalogue/page-31.html
+2022-11-18; 17.32.11,  pass: 0032,  url: https://books.toscrape.com/catalogue/page-32.html
+2022-11-18; 17.32.23,  pass: 0033,  url: https://books.toscrape.com/catalogue/page-33.html
+2022-11-18; 17.32.36,  pass: 0034,  url: https://books.toscrape.com/catalogue/page-34.html
+2022-11-18; 17.32.49,  pass: 0035,  url: https://books.toscrape.com/catalogue/page-35.html
+2022-11-18; 17.33.03,  pass: 0036,  url: https://books.toscrape.com/catalogue/page-36.html
+2022-11-18; 17.33.16,  pass: 0037,  url: https://books.toscrape.com/catalogue/page-37.html
+2022-11-18; 17.33.28,  pass: 0038,  url: https://books.toscrape.com/catalogue/page-38.html
+2022-11-18; 17.33.41,  pass: 0039,  url: https://books.toscrape.com/catalogue/page-39.html
+2022-11-18; 17.33.53,  pass: 0040,  url: https://books.toscrape.com/catalogue/page-40.html
+2022-11-18; 17.34.06,  pass: 0041,  url: https://books.toscrape.com/catalogue/page-41.html
+2022-11-18; 17.34.19,  pass: 0042,  url: https://books.toscrape.com/catalogue/page-42.html
+2022-11-18; 17.34.32,  pass: 0043,  url: https://books.toscrape.com/catalogue/page-43.html
+2022-11-18; 17.34.44,  pass: 0044,  url: https://books.toscrape.com/catalogue/page-44.html
+2022-11-18; 17.34.56,  pass: 0045,  url: https://books.toscrape.com/catalogue/page-45.html
+2022-11-18; 17.35.09,  pass: 0046,  url: https://books.toscrape.com/catalogue/page-46.html
+2022-11-18; 17.35.20,  pass: 0047,  url: https://books.toscrape.com/catalogue/page-47.html
+2022-11-18; 17.35.33,  pass: 0048,  url: https://books.toscrape.com/catalogue/page-48.html
+2022-11-18; 17.35.46,  pass: 0049,  url: https://books.toscrape.com/catalogue/page-49.html
+2022-11-18; 17.35.59,  pass: 0050,  url: https://books.toscrape.com/catalogue/page-50.html

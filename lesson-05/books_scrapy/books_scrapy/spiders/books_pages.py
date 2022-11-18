@@ -1,12 +1,13 @@
 import scrapy
 import pymongo  # для записи документов в базу данных MongoDB
 import sys      # для записи лога
+import datetime
 
 
 class BooksPagesSpider(scrapy.Spider):
     name = 'books_pages'
     allowed_domains = ['books.toscrape.com']
-    start_urls = ['http://books.toscrape.com/']
+    start_urls = ['https://books.toscrape.com/']
 
     custom_settings = {
         # LOG_LEVEL
@@ -45,7 +46,7 @@ class BooksPagesSpider(scrapy.Spider):
         self.count_page = self.count_page + 1
         with open(self.log_file_name, "a", encoding="utf-8") as file_log:
             for output_strim in [sys.stdout, file_log]:
-                print(f"Парсим страницу списка книг {self.count_page:>2}, url: {response.url}", file=output_strim)
+                print(f"{datetime.datetime.now().strftime('%Y-%m-%d; %H.%M.%S')},  pass: {self.count_page:0>4},  url: {response.url}", file=output_strim)
 
         books = response.xpath('//ol[@class="row"]/li')
         for book in books:

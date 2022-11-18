@@ -4,18 +4,19 @@ from scrapy.spiders import CrawlSpider, Rule
 
 import pymongo  # для записи документов в базу данных MongoDB
 import sys      # для записи лога
+import datetime
 
 
 class PagesSpider(CrawlSpider):
     name = 'pages'
     allowed_domains = ['books.toscrape.com']
-    start_urls = ['http://books.toscrape.com/']
+    start_urls = ['https://books.toscrape.com/']
 
     custom_settings = {
         # LOG_LEVEL
         # https://docs.scrapy.org/en/latest/topics/settings.html#std-setting-LOG_LEVEL
         # In list: CRITICAL, ERROR, WARNING, INFO, DEBUG (https://docs.scrapy.org/en/latest/topics/settings.html#std-setting-LOG_LEVEL)
-        # 'LOG_LEVEL': 'ERROR',
+        'LOG_LEVEL': 'ERROR',
     }
 
     # log-файл самодельный
@@ -50,7 +51,7 @@ class PagesSpider(CrawlSpider):
         self.count_page = self.count_page + 1
         with open(self.log_file_name, "a", encoding="utf-8") as file_log:
             for output_strim in [sys.stdout, file_log]:
-                print(f"Проход: {self.count_page:>2}, url: {response.url}", file=output_strim)
+                print(f"{datetime.datetime.now().strftime('%Y-%m-%d; %H.%M.%S')},  pass: {self.count_page:0>4},  url: {response.url}", file=output_strim)
 
         article = response.xpath('//article[@class="product_page"]')
         table_data = article.xpath('./table[contains(@class, "table")]')
