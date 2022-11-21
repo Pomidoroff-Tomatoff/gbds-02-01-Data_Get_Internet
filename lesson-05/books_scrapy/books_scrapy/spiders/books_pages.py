@@ -1,7 +1,9 @@
 import scrapy
-import pymongo  # для записи документов в базу данных MongoDB
+
 import sys      # для записи лога
 import datetime
+
+from books_scrapy.items import Books_Pages_BooksScrapyItem
 
 
 class BooksPagesSpider(scrapy.Spider):
@@ -14,12 +16,20 @@ class BooksPagesSpider(scrapy.Spider):
         # https: // docs.scrapy.org / en / latest / topics / settings.html  # std-setting-LOG_LEVEL
         # In list: CRITICAL, ERROR, WARNING, INFO, DEBUG (https://docs.scrapy.org/en/latest/topics/settings.html#std-setting-LOG_LEVEL)
         'LOG_LEVEL': 'WARNING',
+
+        # РАЗРЕШАЕМ ИСПОЛЬЗОВАНИЕ piplines.py для внесения полученных данных парсера в базу данных
+        # Configure item pipelines
+        # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+        'ITEM_PIPELINES': {
+            'books_scrapy.pipelines.BooksScrapyPipeline': 300,  # это приоритет, чем больше цифра, тем он ниже...
+        }
     }
 
     # log-файл самодельный
     count_page = 0
     log_file_name = "books_pages__log.txt"
 
+    ''' После включения piplines.py эта функциональность перенесена в piplines.py
     # Параметры базы данных MongoDB для записи полученных данных
     db_address = "mongodb://127.0.0.1:27017"
     db_name = "book_toscrape"
@@ -31,6 +41,7 @@ class BooksPagesSpider(scrapy.Spider):
             coll = base[self.db_collection_name]
             id_ins = coll.insert_one(dict(doc_item)).inserted_id
         return id_ins
+    '''
 
     def parse(self, response, **kwargs):
 
@@ -104,6 +115,6 @@ class BooksPagesSpider(scrapy.Spider):
         item['number_of_reviews'] = \
             table_data.xpath('.//th[text()="Number of reviews"]/following-sibling::td[1]/text()').get()
 
-        self.insert_mongodb(item)
+        # self.insert_mongodb(item) # Функционал перенесён в piplines.py
 
         yield item

@@ -2,6 +2,10 @@ import scrapy
 import sys  # для лога
 import datetime
 
+from books_scrapy.items import Books_BooksScrapyItem
+
+
+
 
 class BooksSpider(scrapy.Spider):
     name = 'books'
@@ -10,6 +14,20 @@ class BooksSpider(scrapy.Spider):
 
     count_page = 0  # добавленная переменная для подсчёта количества обработанных страниц
     log_file_name = "books__log.txt"  # log-файл
+
+    custom_settings = {
+        # LOG_LEVEL
+        # https: // docs.scrapy.org / en / latest / topics / settings.html  # std-setting-LOG_LEVEL
+        # In list: CRITICAL, ERROR, WARNING, INFO, DEBUG (https://docs.scrapy.org/en/latest/topics/settings.html#std-setting-LOG_LEVEL)
+        'LOG_LEVEL': 'ERROR',
+
+        # РАЗРЕШАЕМ ИСПОЛЬЗОВАНИЕ piplines.py для внесения полученных данных парсера в базу данных
+        # Configure item pipelines
+        # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+        'ITEM_PIPELINES': {
+            'books_scrapy.pipelines.BooksScrapyPipeline': 300, # это приоритет, чем больше цифра, тем он ниже...
+        }
+    }
 
     def parse(self, response, **kwargs):
 
@@ -25,16 +43,17 @@ class BooksSpider(scrapy.Spider):
 
         books = response.xpath('//ol[@class="row"]/li')
         for book in books:
-            yield {
-                'title':
+            item = Books_BooksScrapyItem(
+                title=
                     book.xpath('.//h3/a/@title').get(),
-                'image': response.urljoin(
+                image=response.urljoin(
                     book.xpath('.//div[@class="image_container"]/a/img/@src').get()),
-                'price':
+                price=
                     book.xpath('.//p[@class="price_color"]/text()').get(),
-                'instock': "".join(
-                    book.xpath('.//p[contains(@class, "instock")]/text()').getall()).strip(),
-            }
+                instock="".join(
+                    book.xpath('.//p[contains(@class, "instock")]/text()').getall()).strip()
+            )
+            yield item
 
         # 2. Следующая страница (краткого списка книг):
         #    a. Ищем кнопку "Next" для перехода на следующую страницу и берём из неё локальную ссылку
