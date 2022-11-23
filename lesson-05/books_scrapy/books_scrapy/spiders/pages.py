@@ -16,11 +16,15 @@ class PagesSpider(CrawlSpider):
         # In list: CRITICAL, ERROR, WARNING, INFO, DEBUG (https://docs.scrapy.org/en/latest/topics/settings.html#std-setting-LOG_LEVEL)
         'LOG_LEVEL': 'ERROR',
 
-        # РАЗРЕШАЕМ ИСПОЛЬЗОВАНИЕ piplines.py для внесения полученных данных парсера в базу данных
         # Configure item pipelines
         # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+        # РАЗРЕШАЕМ ИСПОЛЬЗОВАНИЕ piplines.py: точнее классов в pipelines
+        # Мы можем включить НЕСКОЛЬКО классов в файле piplines.py и все эти классы будут задействованы
+        # (будут выполняться объекты этих классов) в соответствии с указанным приоритетом.
         'ITEM_PIPELINES': {
-            'books_scrapy.pipelines.BooksScrapyPipeline': 300,  # это приоритет, чем больше цифра, тем он ниже...
+            'books_scrapy.pipelines.BooksScrapyPipeline': 300,  # цифра -- это приоритет, чем больше цифра, тем он ниже...
+            'books_scrapy.pipelines.MongoDB_BooksScrapyPipeline': 500,
+            'books_scrapy.pipelines.TXT_LOG_BooksScrapyPipeline': 600,
         }
     }
 

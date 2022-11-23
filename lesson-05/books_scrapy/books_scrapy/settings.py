@@ -28,12 +28,20 @@ USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 16
+# Если единица, то значит мы меняем порядок по умолчанию LIFO на BFO,
+# тем самым сохраняем порядок получения страниц и данных,
+# но загрузка будет медленной...
+# DEPTH_PRIORITY = 1
+# CONCURRENT_REQUESTS = 1
+# SCHEDULER_DISK_QUEUE = 'scrapy.squeues.PickleFifoDiskQueue'
+# SCHEDULER_MEMORY_QUEUE = 'scrapy.squeues.FifoMemoryQueue'
+#####################################################################
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
 DOWNLOAD_DELAY = 0.5
+
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -96,5 +104,10 @@ COOKIES_ENABLED = False
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 # Set settings whose default value is deprecated to a future-proof value
-REQUEST_FINGERPRINTER_IMPLEMENTATION = '2.7'
-TWISTED_REACTOR = 'twisted.internet.asyncioreactor.AsyncioSelectorReactor'
+# Установите параметры, значение по умолчанию которых устарело, на значение, пригодное для использования в будущем
+# ВНИМАНИЕ! Если включить этот параметр, то запуск из среды Python останавливается
+#           с ошибкой на строке:
+#           runner.crawl(BTmpSpider)  # -- вот здесь НЕ РАБОТАЕТ!!!
+#REQUEST_FINGERPRINTER_IMPLEMENTATION = '2.7'
+#TWISTED_REACTOR = 'twisted.internet.asyncioreactor.AsyncioSelectorReactor'
+

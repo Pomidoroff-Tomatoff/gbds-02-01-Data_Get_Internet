@@ -1,8 +1,5 @@
 import scrapy
 
-import sys      # для записи лога
-import datetime
-
 from books_scrapy.items import Books_Pages_BooksScrapyItem
 
 
@@ -17,30 +14,22 @@ class BooksPagesSpider(scrapy.Spider):
         # In list: CRITICAL, ERROR, WARNING, INFO, DEBUG (https://docs.scrapy.org/en/latest/topics/settings.html#std-setting-LOG_LEVEL)
         'LOG_LEVEL': 'WARNING',
 
-        # РАЗРЕШАЕМ ИСПОЛЬЗОВАНИЕ piplines.py для внесения полученных данных парсера в базу данных
         # Configure item pipelines
         # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+        # РАЗРЕШАЕМ ИСПОЛЬЗОВАНИЕ piplines.py: точнее классов в pipelines
+        # Мы можем включить НЕСКОЛЬКО классов в файле piplines.py и все эти классы будут задействованы
+        # (будут выполняться объекты этих классов) в соответствии с указанным приоритетом.
         'ITEM_PIPELINES': {
-            'books_scrapy.pipelines.BooksScrapyPipeline': 300,  # это приоритет, чем больше цифра, тем он ниже...
+            'books_scrapy.pipelines.BooksScrapyPipeline': 300,  # цифра -- это приоритет, чем больше цифра, тем он ниже...
+            'books_scrapy.pipelines.MongoDB_BooksScrapyPipeline': 500,
+            'books_scrapy.pipelines.TXT_LOG_BooksScrapyPipeline': 600,
         }
     }
 
-    # log-файл самодельный
-    count_page = 0
-    log_file_name = "books_pages__log.txt"
-
-    ''' После включения piplines.py эта функциональность перенесена в piplines.py
-    # Параметры базы данных MongoDB для записи полученных данных
-    db_address = "mongodb://127.0.0.1:27017"
-    db_name = "book_toscrape"
-    db_collection_name = "books_pages"
-
-    def insert_mongodb(self, doc_item: dict):
-        with pymongo.MongoClient(self.db_address) as client:
-            base = client[self.db_name]
-            coll = base[self.db_collection_name]
-            id_ins = coll.insert_one(dict(doc_item)).inserted_id
-        return id_ins
+    ''' После включения piplines.py функциональность с базой данных MongoDB 
+        и текстовым логом переехала в файл piplines.py и классы 
+        MongoDB_BooksScrapyPipeline и
+        XT_LOG_BooksScrapyPipeline соответственно
     '''
 
     def parse(self, response, **kwargs):
@@ -53,11 +42,6 @@ class BooksPagesSpider(scrapy.Spider):
         #       для каждой книги
         #    в. Для полученной ссылки выполняем запрос с получением индивидуальной страницы книги,
         #       возврат (callback) которого передаём в метод парсинга индивидуальной страницы.
-
-        self.count_page = self.count_page + 1
-        with open(self.log_file_name, "a", encoding="utf-8") as file_log:
-            for output_strim in [sys.stdout, file_log]:
-                print(f"{datetime.datetime.now().strftime('%Y-%m-%d; %H.%M.%S')},  pass: {self.count_page:0>4},  url: {response.url}", file=output_strim)
 
         books = response.xpath('//ol[@class="row"]/li')
         for book in books:
@@ -114,7 +98,5 @@ class BooksPagesSpider(scrapy.Spider):
             table_data.xpath('.//th[text()="Availability"]/following-sibling::td[1]/text()').get()
         item['number_of_reviews'] = \
             table_data.xpath('.//th[text()="Number of reviews"]/following-sibling::td[1]/text()').get()
-
-        # self.insert_mongodb(item) # Функционал перенесён в piplines.py
 
         yield item
