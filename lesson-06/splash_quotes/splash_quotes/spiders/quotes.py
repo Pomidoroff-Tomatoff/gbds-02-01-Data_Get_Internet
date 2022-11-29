@@ -7,7 +7,7 @@ class QuotesSpider(scrapy.Spider):
     name = 'quotes'
     allowed_domains = ['quotes.toscrape.com']
     # start_urls = ['http://quotes.toscrape.com/js']
-    url = 'http://quotes.toscrape.com/js'
+    start_url = 'http://quotes.toscrape.com/js'
 
     custom_settings = {
         # LOG_LEVEL
@@ -28,12 +28,15 @@ class QuotesSpider(scrapy.Spider):
         },
 
         # Двойники:
+        # Класс, используемый для обнаружения и фильтрации повторяющихся запросов.
         'DUPEFILTER_CLASS': 'scrapy_splash.SplashAwareDupeFilter',
+
+        # Класс, реализующий серверную часть хранилища кэша.
         'HTTPCACHE_STORAGE': 'scrapy_splash.SplashAwareFSCacheStorage',
 
         # 'SPLASH_URL': 'http://localhost:8050',
         # 'SPLASH_URL': 'http://127.0.0.1:8050/run',
-        # Если задан домен с сервером splash, то порт указывать не надо, так как он задан по умолчанию на данном сервере
+        # Используем сервер в инете со Splash-ем, случайно найденный...
         'SPLASH_URL': 'https://s1.onekkk.com/',
 
         # Описание других параметров:
@@ -51,18 +54,21 @@ class QuotesSpider(scrapy.Spider):
         end
     '''   # https://splash.readthedocs.io/en/stable/scripting-ref.html
 
-    def start_requests(self):
-        ''' Используется вместо переменной start_url
-            для генерации или пред-обработки ссылок
-        '''
-        yield SplashRequest(
-            url=self.url,                     # Сайт, который нужно рендерить
+    def get_rendering_request(self, url_js=""):
+        return SplashRequest(
+            url=url_js,                  # Сайт, который нужно рендерить
             endpoint='execute',               # Выполнить скрипт
-            callback=self.parse,              # После выполнения скрипта ответ передать ф. self.parse
+            callback=self.parse,              # После выполнения скрипта ответ передать ф. self.parse()
             args={'lua_source': self.script}  # Скрипт для выполнения
         )
 
-    def parse(self, response):
+    def start_requests(self):
+        ''' Используется вместо переменной start_url
+            выполняет 1-ый запрос response и возвращает ответ request
+        '''
+        yield self.get_rendering_request(url_js=self.start_url)
+
+    def parse(self, response, **kwargs):
         quotes = response.xpath('//div[@class="quote"]')
         print(f"PARS, QUOTES = {len(quotes)}, url = {response.url}")
         for quote in quotes:
@@ -70,3 +76,8 @@ class QuotesSpider(scrapy.Spider):
                 'author': quote.xpath('.//small[@class="author"]/text()').get(),
                 'quote':  quote.xpath('.//span[@class="text"]/text()').get(),
             }
+
+        next_page_local = response.xpath('//nav/*/li[@class="next"]/a/@href').get()
+        if next_page_local:
+            next_page = self.start_url.strip('/').strip('js').strip('/') + next_page_local
+            yield self.get_rendering_request(url_js=next_page)
