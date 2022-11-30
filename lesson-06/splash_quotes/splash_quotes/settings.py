@@ -12,13 +12,22 @@ BOT_NAME = 'splash_quotes'
 SPIDER_MODULES = ['splash_quotes.spiders']
 NEWSPIDER_MODULE = 'splash_quotes.spiders'
 
+# LOG
+LOG_ENABLED = True
+# LOG_LEVEL
+# In list: CRITICAL, ERROR, WARNING, INFO, DEBUG (https://docs.scrapy.org/en/latest/topics/settings.html#std-setting-LOG_LEVEL)
+LOG_LEVEL = 'ERROR'
+
+#Unicode
+FEED_EXPORT_ENCODING = 'UTF-8'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'splash_quotes (+http://www.yourdomain.com)'
+USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36'
 
 # Obey robots.txt rules
 # ROBOTSTXT_OBEY = True
-# Obey robots.txt rules (работающие растройки)
+# Obey robots.txt rules (работающие настройки)
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
@@ -27,13 +36,14 @@ ROBOTSTXT_OBEY = False
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-#DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 0.5
 # The download delay setting will honor only one of:
-#CONCURRENT_REQUESTS_PER_DOMAIN = 16
+CONCURRENT_REQUESTS_PER_DOMAIN = 8
+CONCURRENT_REQUESTS_PER_IP = 8
 #CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
-#COOKIES_ENABLED = False
+COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False
@@ -44,17 +54,33 @@ ROBOTSTXT_OBEY = False
 #   'Accept-Language': 'en',
 #}
 
+# Server SPLUSH
+# SPLASH_URL = 'http://localhost:8050'
+# SPLASH_URL = 'http://127.0.0.1:8050/run'
+SPLASH_URL = 'https://s1.onekkk.com/'
+
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
-#    'splash_quotes.middlewares.SplashQuotesSpiderMiddleware': 543,
-#}
+SPIDER_MIDDLEWARES = {
+    # 'splash_quotes.middlewares.SplashQuotesSpiderMiddleware': 543,
+    'scrapy_splash.SplashDeduplicateArgsMiddleware': 100,
+}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    'splash_quotes.middlewares.SplashQuotesDownloaderMiddleware': 543,
-#}
+DOWNLOADER_MIDDLEWARES = {
+    # 'splash_quotes.middlewares.SplashQuotesDownloaderMiddleware': 543,
+    'scrapy_splash.SplashCookiesMiddleware': 723,
+    'scrapy_splash.SplashMiddleware': 725,
+    'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
+}
+
+# Двойники: Класс, используемый для обнаружения и фильтрации повторяющихся запросов.
+DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
+
+# Класс, реализующий серверную часть хранилища кэша.
+HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
+
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -64,9 +90,10 @@ ROBOTSTXT_OBEY = False
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'splash_quotes.pipelines.SplashQuotesPipeline': 300,
-#}
+ITEM_PIPELINES = {
+    'splash_quotes.pipelines.SplashQuotesPipeline': 300,
+    'splash_quotes.pipelines.MongoDB_QuotesPipeline': 290,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
@@ -88,3 +115,11 @@ ROBOTSTXT_OBEY = False
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+# Set settings whose default value is deprecated to a future-proof value
+# Установите параметры, значение по умолчанию которых устарело, на значение, пригодное для использования в будущем
+# ВНИМАНИЕ! Если включить этот параметр, то запуск из среды Python останавливается
+#           с ошибкой на строке:
+#           runner.crawl(BTmpSpider)  # -- вот здесь НЕ РАБОТАЕТ!!!
+REQUEST_FINGERPRINTER_IMPLEMENTATION = '2.7'
+TWISTED_REACTOR = 'twisted.internet.asyncioreactor.AsyncioSelectorReactor'
