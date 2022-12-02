@@ -2,12 +2,13 @@ import scrapy
 import logging
 
 from scrapy_splash import SplashRequest
+from splash_quotes.items import Author_SplashQuotesItem
 
 
 class AuthorSpider(scrapy.Spider):
     name = 'author'
     allowed_domains = ['quotes.toscrape.com']
-    start_url = 'http://quotes.toscrape.com/'
+    start_url = 'https://quotes.toscrape.com/'
     splash_mode = True
 
     script = '''
@@ -43,7 +44,7 @@ class AuthorSpider(scrapy.Spider):
         quotes = response.xpath('//div[@class="quote"]')
         print(f"PARSE, QUOTES = {len(quotes)}, url = {response.url}")
         for quote in quotes:
-            # углубляемся на страничку автора
+            # нырок на страничку автора
             link_local = quote.xpath('.//small[@class="author"]/following-sibling::a[1]/@href').get()
             if link_local:
                 link = response.urljoin(link_local)
@@ -51,10 +52,19 @@ class AuthorSpider(scrapy.Spider):
 
         next_page_local = response.xpath('//nav/*/li[@class="next"]/a/@href').get()
         if next_page_local:
-            next_page = self.start_url.strip('/').strip('js').strip('/') + next_page_local
-            yield self.get_rendering_request(url=next_page, callback=self.parse)
+            next_page = response.urljoin(next_page_local)
+            yield self.get_rendering_request(url=next_page, callback=self.parse) 
 
     def parse_item(self, response):
-        yield {
-            'author': response.xpath('//h3[@class="author-title"]/text()').get().strip()
-        }
+        author_details = response.xpath('//div[@class="author-details"]')
+        item = Author_SplashQuotesItem(
+            author=
+                author_details.xpath('.//*[@class="author-title"]/text()').get().strip(),
+            born_date=
+                author_details.xpath('.//*[@class="author-born-date"]/text()').get().strip(),
+            born_location=
+                author_details.xpath('.//*[@class="author-born-location"]/text()').get().lstrip('in').strip(),
+            description=
+                author_details.xpath('.//*[@class="author-description"]/text()').get().strip()
+        )
+        yield item

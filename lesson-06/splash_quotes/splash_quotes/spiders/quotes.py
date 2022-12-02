@@ -2,51 +2,36 @@ import scrapy
 import logging
 
 from scrapy_splash import SplashRequest
+from splash_quotes.items import Quote_SplashQuotesItem
 
 
 class QuotesSpider(scrapy.Spider):
     name = 'quotes'
     allowed_domains = ['quotes.toscrape.com']
-    # start_urls = ['http://quotes.toscrape.com/js']
-    start_url = 'http://quotes.toscrape.com/js'
+    # start_urls = ['https://quotes.toscrape.com/js']
+    start_url = 'https://quotes.toscrape.com/js'
 
-    # custom_settings = {
-    #     # LOG_LEVEL
-    #     # https://docs.scrapy.org/en/latest/topics/settings.html#std-setting-LOG_LEVEL
-    #     # In list: CRITICAL, ERROR, WARNING, INFO, DEBUG
-    #     # 'LOG_LEVEL': 'ERROR',
-    #
-    #     # Configure item pipelines
-    #     # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-    #     # 'ITEM_PIPELINES': {
-    #     #    'splash_quotes.pipelines.SplashQuotesPipeline': 300,
-    #     #    'splash_quotes.pipelines.MongoDB_QuotesPipeline': 290,
-    #     # },
-    #
-    #     # 'SPLASH_URL': 'http://localhost:8050',
-    #     # 'SPLASH_URL': 'http://127.0.0.1:8050/run',
-    #     # Используем сервер в инете со Splash-ем, случайно найденный...
-    #     # 'SPLASH_URL': 'https://s1.onekkk.com/',
-    #
-    #     # 'SPIDER_MIDDLEWARES': {
-    #     #     'scrapy_splash.SplashDeduplicateArgsMiddleware': 100,
-    #     # },
-    #
-    #     # 'DOWNLOADER_MIDDLEWARES': {
-    #     #     'scrapy_splash.SplashCookiesMiddleware': 723,
-    #     #     'scrapy_splash.SplashMiddleware': 725,
-    #     #     'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
-    #     # },
-    #
-    #     # Двойники: Класс, используемый для обнаружения и фильтрации повторяющихся запросов.
-    #     # 'DUPEFILTER_CLASS': 'scrapy_splash.SplashAwareDupeFilter',
-    #
-    #     # Класс, реализующий серверную часть хранилища кэша.
-    #     # 'HTTPCACHE_STORAGE': 'scrapy_splash.SplashAwareFSCacheStorage',
-    #
-    #     # Описание других параметров:
-    #     # https://pypi.python.org/pypi/scrapy-splash
-    # }
+    custom_settings = {
+        # LOG_LEVEL
+        # https://docs.scrapy.org/en/latest/topics/settings.html#std-setting-LOG_LEVEL
+        # In list: CRITICAL, ERROR, WARNING, INFO, DEBUG
+        # 'LOG_LEVEL': 'ERROR',
+
+        # Configure item pipelines
+        # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+        # 'ITEM_PIPELINES': {
+        #    'splash_quotes.pipelines.SplashQuotesPipeline': 300,
+        #    'splash_quotes.pipelines.MongoDB_QuotesPipeline': 290,
+        # },
+
+        # 'SPLASH_URL': 'http://localhost:8050',
+        # 'SPLASH_URL': 'http://127.0.0.1:8050/run',
+        # Используем сервер в инете со Splash-ем, случайно найденный...
+        # 'SPLASH_URL': 'https://s1.onekkk.com/',
+
+        # Описание других параметров:
+        # https://pypi.python.org/pypi/scrapy-splash
+    }
 
     script = '''
         function main(splash, args)
@@ -72,7 +57,7 @@ class QuotesSpider(scrapy.Spider):
             return None
 
     def start_requests(self):
-        ''' Используется вместо переменной start_url
+        ''' Используется вместо переменной start_urls
             1-ый запрос request к начальному url и возвращает ответ response с указанием функции
         '''
         yield self.get_rendering_request(url=self.start_url, callback=self.parse)
@@ -81,12 +66,20 @@ class QuotesSpider(scrapy.Spider):
         quotes = response.xpath('//div[@class="quote"]')
         print(f"PARSE, QUOTES = {len(quotes)}, url = {response.url}")
         for quote in quotes:
-            yield {
-                'author': quote.xpath('.//small[@class="author"]/text()').get(),
-                'quote':  quote.xpath('.//span[@class="text"]/text()').get(),
-            }
+            yield self.parse_item(quote)
 
         next_page_local = response.xpath('//nav/*/li[@class="next"]/a/@href').get()
         if next_page_local:
-            next_page = self.start_url.strip('/').strip('js').strip('/') + next_page_local
+            next_page = response.urljoin(next_page_local)
             yield self.get_rendering_request(url=next_page, callback=self.parse)
+
+    def parse_item(self, quote):
+        item = Quote_SplashQuotesItem(
+            author=
+                quote.xpath('.//small[@class="author"]/text()').get(),
+            quote=
+                quote.xpath('.//span[@class="text"]/text()').get(),
+            tags=
+                quote.xpath('.//a[@class="tag"]/text()').getall(),
+        )
+        return item  # здесь return(!), так как это не конвейер.

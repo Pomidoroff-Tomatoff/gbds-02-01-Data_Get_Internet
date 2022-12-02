@@ -75,9 +75,9 @@ DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
 }
 
-# Двойники: Класс, используемый для обнаружения и фильтрации повторяющихся запросов.
+# Двойники:
+# Класс, используемый для обнаружения и фильтрации повторяющихся запросов.
 DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
-
 # Класс, реализующий серверную часть хранилища кэша.
 HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
 
