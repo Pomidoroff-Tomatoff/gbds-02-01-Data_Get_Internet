@@ -12,18 +12,7 @@ class BooksPagesSpider(scrapy.Spider):
         # LOG_LEVEL
         # https: // docs.scrapy.org / en / latest / topics / settings.html  # std-setting-LOG_LEVEL
         # In list: CRITICAL, ERROR, WARNING, INFO, DEBUG (https://docs.scrapy.org/en/latest/topics/settings.html#std-setting-LOG_LEVEL)
-        'LOG_LEVEL': 'WARNING',
-
-        # Configure item pipelines
-        # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-        # РАЗРЕШАЕМ ИСПОЛЬЗОВАНИЕ piplines.py: точнее классов в pipelines
-        # Мы можем включить НЕСКОЛЬКО классов в файле piplines.py и все эти классы будут задействованы
-        # (будут выполняться объекты этих классов) в соответствии с указанным приоритетом.
-        'ITEM_PIPELINES': {
-            'books_scrapy.pipelines.BooksScrapyPipeline': 300,  # цифра -- это приоритет, чем больше цифра, тем он ниже...
-            'books_scrapy.pipelines.MongoDB_BooksScrapyPipeline': 500,
-            'books_scrapy.pipelines.TXT_LOG_BooksScrapyPipeline': 600,
-        }
+        'LOG_LEVEL': 'ERROR',
     }
 
     ''' После включения piplines.py функциональность с базой данных MongoDB 
@@ -33,7 +22,6 @@ class BooksPagesSpider(scrapy.Spider):
     '''
 
     def parse(self, response, **kwargs):
-
         # 1. Парсим краткий список книг на текущей странице для получения
         #    ссылок на индивидуальную страницу каждой книги
         #    -. Сообщаем в лог-файл о странице, поступившей на обработку
@@ -64,39 +52,41 @@ class BooksPagesSpider(scrapy.Spider):
             next_page_link = response.urljoin(next_page)
             yield scrapy.Request(url=next_page_link, callback=self.parse)
 
+
     def parse_book(self, response):
 
-        # Парсим данные о книге на её индивидуальной странице
+        ''' Парсим данные о книге с её индивидуальной страницы '''
 
         article = response.xpath('//article[@class="product_page"]')
         table_data = article.xpath('./table[contains(@class, "table")]')
 
-        item = {}
-        item['title'] = \
-            article.xpath('.//div[contains(@class, "product_main")]/h1/text()').get()
-        item['price'] = \
-            article.xpath('.//div[contains(@class, "product_main")]/p[@class="price_color"]/text()').get()
-        item['in_stock'] = "".join(
-            article.xpath('.//div[contains(@class, "product_main")]/p[@class="instock availability"]/text()').getall()
-        ).strip()
-        item['image'] = response.urljoin(
-            article.xpath('.//div[@id="product_gallery"]//div[@class ="item active"]/img/@src').get()
+        item = Books_Pages_BooksScrapyItem(
+            title =
+                article.xpath('.//div[contains(@class, "product_main")]/h1/text()').get(),
+            price =
+                article.xpath('.//div[contains(@class, "product_main")]/p[@class="price_color"]/text()').get(),
+            in_stock ="".join(
+                article.xpath('.//div[contains(@class, "product_main")]/p[@class="instock availability"]/text()').getall()
+                ).strip(),
+            image = response.urljoin(
+                article.xpath('.//div[@id="product_gallery"]//div[@class ="item active"]/img/@src').get()
+                ),
+            product_description =
+                article.xpath('./div[@id="product_description"]/following-sibling::p[1]/text()').get(),
+            upc =
+                table_data.xpath('.//th[contains(text(), "UPC")]/following-sibling::td[1]/text()').get(),
+            product_type =
+                table_data.xpath('.//th[contains(text(), "Product Type")]/following-sibling::td[1]/text()').get(),
+            price_exclude_tax =
+                table_data.xpath('.//th[contains(text(), "Price (excl. tax)")]/following-sibling::td[1]/text()').get(),
+            price_include_tax =
+                table_data.xpath('.//th[contains(text(), "Price (incl. tax)")]/following-sibling::td[1]/text()').get(),
+            tax =
+                table_data.xpath('.//th[contains(text(), "Tax")]/following-sibling::td[1]/text()').get(),
+            availability =
+                table_data.xpath('.//th[text()="Availability"]/following-sibling::td[1]/text()').get(),
+            number_of_reviews =
+                table_data.xpath('.//th[text()="Number of reviews"]/following-sibling::td[1]/text()').get()
         )
-        item['product_description'] = \
-            article.xpath('./div[@id="product_description"]/following-sibling::p[1]/text()').get()
-        item['upc'] = \
-            table_data.xpath('.//th[contains(text(), "UPC")]/following-sibling::td[1]/text()').get()
-        item['product_type'] = \
-            table_data.xpath('.//th[contains(text(), "Product Type")]/following-sibling::td[1]/text()').get()
-        item['price_exclude_tax'] = \
-            table_data.xpath('.//th[contains(text(), "Price (excl. tax)")]/following-sibling::td[1]/text()').get()
-        item['price_include_tax'] = \
-            table_data.xpath('.//th[contains(text(), "Price (incl. tax)")]/following-sibling::td[1]/text()').get()
-        item['tax'] = \
-            table_data.xpath('.//th[contains(text(), "Tax")]/following-sibling::td[1]/text()').get()
-        item['availability'] = \
-            table_data.xpath('.//th[text()="Availability"]/following-sibling::td[1]/text()').get()
-        item['number_of_reviews'] = \
-            table_data.xpath('.//th[text()="Number of reviews"]/following-sibling::td[1]/text()').get()
 
         yield item

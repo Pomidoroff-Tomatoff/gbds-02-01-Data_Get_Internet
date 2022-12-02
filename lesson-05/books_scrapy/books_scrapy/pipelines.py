@@ -70,7 +70,7 @@ class MongoDB_BooksScrapyPipeline:
 
     # База данных MongoDB
     db_address = "mongodb://127.0.0.1:27017"
-    db_name = "book_toscrape"
+    db_name = "toscrape_book"
     db_base = None
     db_collection = None
 
@@ -82,11 +82,13 @@ class MongoDB_BooksScrapyPipeline:
         self.db_base = self.client_database_mongo[self.db_name]
         self.db_collection = self.db_base[spider.name]  # Имя коллекции задаём по имени паучка
         print(f"Pipelines: CLASS MongoDB_BooksScrapyPipeline, ОТКРЫТА БД MongoDB \"{self.db_base.name}\", коллекция \"{self.db_collection.name}\"")
+        return
 
     def close_spider(self, spider):
         ''' Закрытие паучка '''
         self.client_database_mongo.close()
         print(f"Pipelines. CLASS MongoDB_BooksScrapyPipeline, ЗАКРЫТО: БД MongoDB.")
+        return
 
     def process_item(self, item, spider):
         self.db_collection.insert_one(item)  # Заносим item в коллекцию базы. Имя коллекции по имени паучка.
@@ -98,5 +100,5 @@ class BooksScrapyPipeline:
     ''' Класс, автоматически созданный при генерации проекта '''
 
     def process_item(self, item, spider):
-        # print(f"Pipelines. CLASS BooksScrapyPipeline: стандартная обработка.")
+        # print(f"Pipelines. CLASS BooksScrapyPipeline: стандартная обработка. {item}")
         return item

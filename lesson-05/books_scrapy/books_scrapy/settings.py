@@ -78,9 +78,15 @@ COOKIES_ENABLED = False
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'books_scrapy.pipelines.BooksScrapyPipeline': 300,
-#}
+# РАЗРЕШАЕМ ИСПОЛЬЗОВАНИЕ piplines.py: точнее классов в pipelines
+# Мы можем включить НЕСКОЛЬКО классов в файле piplines.py и все эти классы будут задействованы
+# (будут выполняться объекты этих классов) в соответствии с указанным приоритетом.
+# цифра -- это приоритет, чем больше цифра, тем он ниже...
+ITEM_PIPELINES = {
+    'books_scrapy.pipelines.BooksScrapyPipeline': 300,  # standard
+    'books_scrapy.pipelines.MongoDB_BooksScrapyPipeline': 301,  # MongoDB
+    'books_scrapy.pipelines.TXT_LOG_BooksScrapyPipeline': 302,  # Log_File
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
@@ -108,6 +114,6 @@ COOKIES_ENABLED = False
 # ВНИМАНИЕ! Если включить этот параметр, то запуск из среды Python останавливается
 #           с ошибкой на строке:
 #           runner.crawl(BTmpSpider)  # -- вот здесь НЕ РАБОТАЕТ!!!
-#REQUEST_FINGERPRINTER_IMPLEMENTATION = '2.7'
-#TWISTED_REACTOR = 'twisted.internet.asyncioreactor.AsyncioSelectorReactor'
+REQUEST_FINGERPRINTER_IMPLEMENTATION = '2.7'
+TWISTED_REACTOR = 'twisted.internet.asyncioreactor.AsyncioSelectorReactor'
 
