@@ -122,4 +122,6 @@ ITEM_PIPELINES = {
 #           с ошибкой на строке:
 #           runner.crawl(BTmpSpider)  # -- вот здесь НЕ РАБОТАЕТ!!!
 REQUEST_FINGERPRINTER_IMPLEMENTATION = '2.7'
-TWISTED_REACTOR = 'twisted.internet.asyncioreactor.AsyncioSelectorReactor'
+# TWISTED_REACTOR = 'twisted.internet.asyncioreactor.AsyncioSelectorReactor'
+TWISTED_REACTOR = 'twisted.internet.selectreactor.SelectReactor'
+
