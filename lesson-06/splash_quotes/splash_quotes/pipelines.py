@@ -22,7 +22,7 @@ class MongoDB_QuotesPipeline:
     def open_spider(self, spider):
         self.mongodb_client = pymongo.MongoClient(self.mongodb_address)
         self.mongodb_base = self.mongodb_client[self.mongodb_base_name]
-        self.mongodb_collection = self.mongodb_base[spider.name]  # collection name == Spider Name
+        # self.mongodb_collection = self.mongodb_base[spider.name]  # collection name == Spider Name
         return
 
     def close_spider(self, spider):
@@ -30,7 +30,8 @@ class MongoDB_QuotesPipeline:
         return
 
     def process_item(self, item, spider):
-        self.mongodb_collection.insert_one(item)  # цитата, автор
+        self.mongodb_collection = self.mongodb_base[item.collection_name]  # collection name == class Item Name
+        self.mongodb_collection.insert_one(item)
         return item
 
 
@@ -46,5 +47,5 @@ class SplashQuotesPipeline:
 
     def process_item(self, item, spider):
         self.item_count += 1
-        print(f"{self.item_count: >5}, {item['author']=}")
+        print(f"{self.item_count: >5}, collection \'{item.collection_name}\', {item['author']=}")
         return item

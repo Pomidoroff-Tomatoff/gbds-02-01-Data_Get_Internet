@@ -14,6 +14,7 @@ class SplashQuotesItem(scrapy.Item):
 
 
 class Author_SplashQuotesItem(scrapy.Item):
+    collection_name = 'authors'
     _id = scrapy.Field()  # key-поле для MongoDB, требуется его иметь, значение задаётся самой монгой.
     author = scrapy.Field()
     born_date = scrapy.Field()
@@ -23,6 +24,7 @@ class Author_SplashQuotesItem(scrapy.Item):
 
 
 class Quote_SplashQuotesItem(scrapy.Item):
+    collection_name = 'quotes'
     _id = scrapy.Field()  # key-поле для MongoDB, требуется его иметь, значение задаётся самой монгой.
     author = scrapy.Field()
     quote = scrapy.Field()
