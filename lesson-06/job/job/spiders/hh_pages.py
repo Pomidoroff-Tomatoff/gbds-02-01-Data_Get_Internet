@@ -162,12 +162,15 @@ class HhPagesSpider(scrapy.Spider):
 
     def duplicate_remover(self, values: list = None) ->list:
         if type(values) is list:
-            for i in range(len(values) - 1):
+            i = 0
+            while i < len(values):  # Цикл for не пересчитывает условие проверки цикла и поэтому не используется
                 j = i + 1
                 while j < len(values):
                     if values[i] == values[j]:
                         values.pop(j)
                     else:
                         j += 1
+                else:
+                    i += 1
         return values
     # END duplicates_remove()
