@@ -132,7 +132,9 @@ class HhPagesSpider(scrapy.Spider):
         )
         yield item
 
+
     # БИБЛИОТЕКА
+
     def join_clear(self, words: list = []) -> str:
         ''' объединяем список слов в строку заменяя спец-пробелы '''
         def join_digit_word(word: str = "") -> str:
@@ -160,16 +162,16 @@ class HhPagesSpider(scrapy.Spider):
         return string
     # END join_clear()
 
-    def duplicate_remover(self, values: list = None) ->list:
+    def duplicate_remover(self, values: list = None) -> list:
+        ''' Удаляем дубликаты слов в оригинальном(!) списке,
+            Адрес оригинального (полученного) списка возвращается.
+            Порядок слов исходный (не меняется).
+        '''
         if type(values) is list:
             i = 0
-            while i < len(values):  # Цикл for не пересчитывает условие проверки цикла и поэтому не используется
-                j = i + 1
-                while j < len(values):
-                    if values[i] == values[j]:
-                        values.pop(j)
-                    else:
-                        j += 1
+            while i < len(values) - 1:
+                while values[i] in values[i + 1::]:
+                    values.pop(values.index(values[i], i + 1, ))
                 else:
                     i += 1
         return values
