@@ -82,8 +82,8 @@ class SQLite_JobPipeline:
 
 
 class MongoDB_JobPipeline:
-
     ''' База данных MongoDB '''
+
     mongodb_address = "mongodb://127.0.0.1:27017"
     mongodb_client = None
     mongodb_base_name = "job"
@@ -100,10 +100,14 @@ class MongoDB_JobPipeline:
         return
 
     def process_item(self, item, spider):
+        # Имя коллекции (таблица) определяется либо по атрибуту 'collection_name' класса "item",
+        # а если он не определён, то по имени паука
         if getattr(item, 'collection_name'):
             self.mongodb_collection = self.mongodb_base[item.collection_name]
         else:
             self.mongodb_collection = self.mongodb_base[spider.name]
+
+        # Заносим данные в базу!
         self.mongodb_collection.insert_one(item)
         return item
 
@@ -118,5 +122,5 @@ class JobPipeline:
 
     def process_item(self, item, spider):
         self.item_count += 1
-        print(f"{self.item_count:0>5}.  {item['title']= }")
+        print(f"{self.item_count:0>5}. employer={item.get('employer'):<20s}, {item['title']= }")
         return item

@@ -1,18 +1,19 @@
 import scrapy
 from scrapy_splash import SplashRequest
-
 from w3lib.url import add_or_replace_parameters
-
-from job.items import HhPages_JobItem
+import logging
+from job.items import HhPages_JobItem  # класс данных из item.py
 
 
 class HhPagesSpider(scrapy.Spider):
     name = 'hh_pages'
     allowed_domains = ['hh.ru']
+    transfer_protocol = 'https://'
+    url_middle = '/search/vacancy/'
     # start_urls = ['http://hh.ru/']
-    start_url = 'https://hh.ru/search/vacancy/'
+    # start_url = 'https://hh.ru/search/vacancy/'
 
-    splash_mode = False  # Включение рендеринга SPLASH (True)
+    splash_mode = False  # Включение рендеринга SPLASH: True
     count_pages = 0
     max_count_pages = 500000
 
@@ -35,6 +36,7 @@ class HhPagesSpider(scrapy.Spider):
     # -- примантировать параметры к начальной ссылке можно при помощи хорошей функции
     #      add_or_replace_parameters (w3lib.url)
     #    позволяющей не беспокоится о правилах стыковки частей запроса.
+
     item_on_page = 20
     params = {
         'area': 1,
@@ -65,78 +67,81 @@ class HhPagesSpider(scrapy.Spider):
             * используя плагин Spash (self.splash_mode == True)
             * при помощи стандартного механизма Скрапи
         '''
-        if url or callback:
-            if self.splash_mode:
-                return SplashRequest(
-                    url=url,             # Сайт, который нужно рендерить
-                    endpoint='execute',  # Выполнить скрипт?
-                    callback=callback,   # После выполнения скрипта ответ передать ф. self.parse()
-                    args={'lua_source': self.script}  # Скрипт для выполнения Spash
-                )
-            else:
-                return scrapy.Request(url=url, callback=callback)
-        else:
-            logging.log(logging.CRITICAL, "*** ERROR method parameter: callback=None")
+        # Проверка параметров
+        if not url or not callback:
+            logging.log(logging.CRITICAL, "*** ERROR method parameter: url or callback is None")
             return None
+
+        if self.splash_mode:
+            logging.log(logging.INFO, "*** INFO: Splash plugin is used.")
+            return SplashRequest(
+                url=url,  # Сайт, который нужно рендерить
+                endpoint='execute',  # Выполнить скрипт?
+                callback=callback,  # После выполнения скрипта ответ передать ф. self.parse()
+                args={'lua_source': self.script}  # Скрипт для выполнения Spash
+            )
+        else:
+            logging.log(logging.INFO, "*** INFO: Use standard scrapy Request.")
+            return scrapy.Request(url=url, callback=callback)
 
     def start_requests(self):
         ''' Доступ с параметрами нужен только к первой странице списка,
             переход на следующие странице выполняется ссылкой в кнопке перехода на сл. стр.
         '''
         response = self.get_rendering_request(
-            url=add_or_replace_parameters(self.start_url, self.params),
+            url=add_or_replace_parameters(
+                self.transfer_protocol + self.allowed_domains[0].strip('/') + '/' + self.url_middle.strip('/'),
+                self.params),
             callback=self.parse
         )
-        # response = scrapy.Request(
-        #     url=add_or_replace_parameters(self.start_url, self.params),
-        #     callback=self.parse)
         yield response
 
     def parse(self, response):
         self.count_pages += 1
         vacancies = response.xpath('//div[@id="a11y-main-content"]')
         vacancies = vacancies.xpath('./div[contains(@data-qa, "vacancy-serp__vacancy")]')
-        print(f"Processing page is: {self.count_pages:0>5}, {len(vacancies)=}")
+        print(f"Page processing is: {self.count_pages:0>5}, {len(vacancies)=}")
+
         for vacancy in vacancies:
             link = vacancy.xpath('.//h3/*/a[@data-qa="serp-item__title"]/@href').get().split('?')[0]
-            yield response.follow(url=link, callback=self.parse_item)
-            # yield scrapy.Request(url=link, callback=self.parse_item)
-            # yield self.get_rendering_request(url=link, callback=self.parse_item)
+            yield self.get_rendering_request(url=link, callback=self.parse_item)
+            # yield response.follow(url=link, callback=self.parse_item)
 
         if self.count_pages > self.max_count_pages:
-            print(f"Количество страниц списка {self.count_pages + 1} вышло за максимум, листание остановлено...")
+            logging.log(logging.INFO, f"Количество страниц списка {self.count_pages + 1} вышло за максимум, листание остановлено...")
             return None
 
-        next_page = response.xpath('//a[@data-qa="pager-next"]/@href').get()
-        if next_page:
-            yield response.follow(url=next_page, callback=self.parse)
+        next = response.xpath('//a[@data-qa="pager-next"]/@href').get()
+        if next:
+            next_url = self.transfer_protocol + self.allowed_domains[0].strip('/') + "/" + next.strip("/")
+            yield self.get_rendering_request(url=next_url, callback=self.parse)
         return None
 
     def parse_item(self, response):
         item = HhPages_JobItem(
             # ВНИМАНИЕ: хитрый заголовок!
-            #   После тега 'h1' указывать тег 'span' нельзя, иначе возвращается Null,
+            #   После тега 'h1' указывать тег 'span' нельзя, иначе возвращается None,
             #   вместо текста заголовка
-            title =
-                response.xpath('//div[@class="vacancy-title"]/h1/text()').get(),
-            salary = self.join_clear(
+            title=
+            response.xpath('//div[@class="vacancy-title"]/h1/text()').get(),
+            salary=self.join_clear(
                 response.xpath('.//div[@class="vacancy-title"]/*[@data-qa="vacancy-salary"]/span/text()').getall()),
-            employer = self.join_clear(self.duplicate_remover(
+            employer=self.join_clear(self.duplicate_remover(
                 response.xpath('//span[@data-qa="bloko-header-2"]/text()').getall())),
             link=
-                response.url,
-            vacancy_id =
-                response.url.split('/vacancy/')[-1],
-            date_publication = self.join_clear(
+            response.url,
+            vacancy_id=
+            response.url.split('/vacancy/')[-1],
+            date_publication=self.join_clear(
                 response.xpath('//p[@class="vacancy-creation-time-redesigned"]/text()').getall())
         )
         yield item
 
-
-    # БИБЛИОТЕКА
+    # БИБЛИОТЕКА КЛАССА
 
     def join_clear(self, words: list = []) -> str:
         ''' объединяем список слов в строку заменяя спец-пробелы '''
+
         def join_digit_word(word: str = "") -> str:
             ''' Схлопнуть спец-пробел между цифрами,
                 а между словами и цифрами -- поставить обычный пробел '''
@@ -160,12 +165,15 @@ class HhPagesSpider(scrapy.Spider):
         else:
             string = words  # Ничего не делаем
         return string
+
     # END join_clear()
 
     def duplicate_remover(self, values: list = None) -> list:
         ''' Удаляем дубликаты слов в оригинальном(!) списке,
             Адрес оригинального (полученного) списка возвращается.
             Порядок слов исходный (не меняется).
+            ПРИМЕЧАНИЕ: Значение i+1 в срезе values[i + 1::] может выйти за границы,
+            но это не приводит к ошибке!
         '''
         if type(values) is list:
             i = 0
@@ -176,3 +184,17 @@ class HhPagesSpider(scrapy.Spider):
                     i += 1
         return values
     # END duplicates_remove()
+
+
+# ZIP of code
+'''
+    def start_requests(self):
+        # Доступ с параметрами нужен только к первой странице списка,
+        # переход на следующие странице выполняется ссылкой в кнопке перехода на сл. стр.
+        response = scrapy.Request(
+            url=add_or_replace_parameters(self.start_url, self.params),
+            callback=self.parse)
+        yield response
+        
+    # yield response.follow(url=next_page, callback=self.parse)
+'''
