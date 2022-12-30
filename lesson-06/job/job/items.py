@@ -16,21 +16,23 @@ class HhList_JobItem(scrapy.Item):
     collection_name = 'vacancies_list'  # имя таблицы, не является полем
     _id = scrapy.Field()  # key-поле для MongoDB, обязательное.
     title = scrapy.Field()
-    link = scrapy.Field()
-    vacancy_id = scrapy.Field()
     employer = scrapy.Field()
-    salary = scrapy.Field()
+    salary_min = scrapy.Field()
+    salary_max = scrapy.Field()
+    salary_cur = scrapy.Field()
     # date_publication = scrapy.Field()  # отсутствует в кратком списке
+    link = scrapy.Field()
     pass
 
 
 class HhPages_JobItem(scrapy.Item):
-    collection_name = 'vacancies'  # имя таблицы, не является полем
+    collection_name = 'vacancies'   # имя таблицы, не является полем
     _id = scrapy.Field()  # key-поле для MongoDB, обязательное.
     title = scrapy.Field()
-    link = scrapy.Field()
-    vacancy_id = scrapy.Field()
     employer = scrapy.Field()
-    salary = scrapy.Field()
-    date_publication = scrapy.Field()
+    salary_min = scrapy.Field()
+    salary_max = scrapy.Field()
+    salary_cur = scrapy.Field()
+    date_publication = scrapy.Field()  # отсутствует в кратком списке
+    link = scrapy.Field()
     pass

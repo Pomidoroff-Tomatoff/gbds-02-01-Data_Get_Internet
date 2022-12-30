@@ -4,6 +4,8 @@ from w3lib.url import add_or_replace_parameters
 import logging
 from job.items import HhPages_JobItem  # класс данных из item.py
 
+import job.spiders.job as job  # Библиотека для парсера
+
 
 class HhPagesSpider(scrapy.Spider):
     name = 'hh_pages'
@@ -13,7 +15,9 @@ class HhPagesSpider(scrapy.Spider):
     # start_urls = ['http://hh.ru/']
     # start_url = 'https://hh.ru/search/vacancy/'
 
-    splash_mode = False  # Включение рендеринга SPLASH: True
+    collection_name = HhPages_JobItem.collection_name
+
+    splash_mode = True  # Включение рендеринга SPLASH: True
     count_pages = 0
     max_count_pages = 500000
 
@@ -100,7 +104,7 @@ class HhPagesSpider(scrapy.Spider):
         self.count_pages += 1
         vacancies = response.xpath('//div[@id="a11y-main-content"]')
         vacancies = vacancies.xpath('./div[contains(@data-qa, "vacancy-serp__vacancy")]')
-        print(f"Page processing is: {self.count_pages:0>5}, {len(vacancies)=}")
+        print(f"PAGE PROCESSING: {self.count_pages:0>5}, {len(vacancies)=}")
 
         for vacancy in vacancies:
             link = vacancy.xpath('.//h3/*/a[@data-qa="serp-item__title"]/@href').get().split('?')[0]
@@ -122,71 +126,33 @@ class HhPagesSpider(scrapy.Spider):
             # ВНИМАНИЕ: хитрый заголовок!
             #   После тега 'h1' указывать тег 'span' нельзя, иначе возвращается None,
             #   вместо текста заголовка
+            _id=
+                response.url.split('/vacancy/')[-1],
             title=
-            response.xpath('//div[@class="vacancy-title"]/h1/text()').get(),
-            salary=self.join_clear(
-                response.xpath('.//div[@class="vacancy-title"]/*[@data-qa="vacancy-salary"]/span/text()').getall()),
-            employer=self.join_clear(self.duplicate_remover(
-                response.xpath('//span[@data-qa="bloko-header-2"]/text()').getall())),
-            link=
-            response.url,
-            vacancy_id=
-            response.url.split('/vacancy/')[-1],
-            date_publication=self.join_clear(
-                response.xpath('//p[@class="vacancy-creation-time-redesigned"]/text()').getall())
+                response.xpath('//div[@class="vacancy-title"]/h1/text()').get(),
+            employer=job.join_clear(
+                job.duplicate_remover(
+                    response.xpath('//span[@data-qa="bloko-header-2"]/text()').getall()
+                )
+            ),
+            date_publication=job.join_clear(
+                response.xpath('//p[@class="vacancy-creation-time-redesigned"]/text()').getall()),
+            link =
+                response.url
         )
+        salary = job.get_maney(
+            job.join_clear(
+                response.xpath('.//div[@class="vacancy-title"]/*[@data-qa="vacancy-salary"]/span/text()').getall()
+            )
+        )
+        item['salary_min'] = salary['min']
+        item['salary_max'] = salary['max']
+        item['salary_cur'] = salary['cur']
         yield item
 
-    # БИБЛИОТЕКА КЛАССА
+    # БИБЛИОТЕКА КЛАССА переехала в job.py
 
-    def join_clear(self, words: list = []) -> str:
-        ''' объединяем список слов в строку заменяя спец-пробелы '''
-
-        def join_digit_word(word: str = "") -> str:
-            ''' Схлопнуть спец-пробел между цифрами,
-                а между словами и цифрами -- поставить обычный пробел '''
-            elements = word.split()
-            for i in range(len(elements) - 1):
-                if elements[i].isdigit():
-                    if elements[i + 1].isdigit():
-                        elements[i + 1] = "".join([elements[i], elements[i + 1]])
-                        elements[i] = ""
-            else:
-                word = " ".join(elements)
-            return word
-
-        if type(words) is list:
-            for i in range(len(words)):
-                words[i] = join_digit_word(words[i])
-            string = " ".join(words)
-            string = " ".join(string.split())
-        elif type(words) is str:
-            string = join_digit_word(words)
-        else:
-            string = words  # Ничего не делаем
-        return string
-
-    # END join_clear()
-
-    def duplicate_remover(self, values: list = None) -> list:
-        ''' Удаляем дубликаты слов в оригинальном(!) списке,
-            Адрес оригинального (полученного) списка возвращается.
-            Порядок слов исходный (не меняется).
-            ПРИМЕЧАНИЕ: Значение i+1 в срезе values[i + 1::] может выйти за границы,
-            но это не приводит к ошибке!
-        '''
-        if type(values) is list:
-            i = 0
-            while i < len(values) - 1:
-                while values[i] in values[i + 1::]:
-                    values.pop(values.index(values[i], i + 1, ))
-                else:
-                    i += 1
-        return values
-    # END duplicates_remove()
-
-
-# ZIP of code
+# ZIP of code: запас использованного ранее кода
 '''
     def start_requests(self):
         # Доступ с параметрами нужен только к первой странице списка,

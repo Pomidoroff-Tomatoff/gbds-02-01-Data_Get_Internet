@@ -9,75 +9,102 @@ from itemadapter import ItemAdapter
 
 import pymongo
 import sqlite3
+import traceback
 
 
 class SQLite_JobPipeline:
 
     connection = None
     cursor = None
-    base_name = 'job_base'
+    base_name_std = 'job_base'
     base_name_ext = '.db'
     table_name = 'vacancies'
     item_count = 0
 
-    create_table_query = f'''
-        CREATE TABLE {table_name}(
-            _id INTEGER PRIMARY KEY,
-            title TEXT,
-            vacancy_id TEXT,
-            link TEXT,
-            employer TEXT,
-            salary TEXT,
-            date_publication TEXT
-        )
-        '''
-    insert_query = f'''
-        INSERT INTO {table_name}(
-            title,
-            vacancy_id,
-            link,
-            employer,
-            salary,
-            date_publication
-            )
-        VALUES(?, ?, ?, ?, ?, ?)
-        '''
+    def get_query(self, name: str = table_name, query: str = 'insert'):
+        ''' Подстановка в запрос: имя таблицы '''
+        if query.upper() == 'insert'.upper():
+            insert_query = f'''
+                INSERT INTO {name}(
+                    _id,
+                    title,
+                    employer,
+                    salary_min,
+                    salary_max,
+                    salary_cur,
+                    date_publication,
+                    link
+                    )
+                VALUES(?, ?, ?, ?, ?, ?, ?, ?)
+                '''
+            return insert_query
+
+        if query.upper() == 'create'.upper():
+            create_table_query = f'''
+                CREATE TABLE {name}(
+                    _id INTEGER PRIMARY KEY,
+                    title TEXT,
+                    employer TEXT,
+                    salary_min INTEGER,
+                    salary_max INTEGER,
+                    salary_cur TEXT,
+                    date_publication TEXT,
+                    link TEXT
+                )
+                '''
+                # vacancy_id INTEGER KEY,
+            return create_table_query
+
 
     def open_spider(self, spider):
-        # имя базы: добавляем имя паука
-        base_name_and_spider = self.base_name + '__' + spider.name + self.base_name_ext
-        self.connection = sqlite3.connect(base_name_and_spider)
-        self.cursor = self.connection.cursor()
+        ''' Иниализация класса при открытии паука '''
+        if getattr(spider, 'collection_name'):
+            # Задаём имя таблицы по имени атрибута коллекции в классе Item
+            self.table_name = spider.collection_name
 
+        # имя базы строим по имени паука -- стандартная часть + имя паучка
+        base_name = self.base_name_std + '__' + spider.name + self.base_name_ext
+        self.connection = sqlite3.connect(base_name)  # соединение (создание) с БД на диске
+        self.cursor = self.connection.cursor()        # указатель на открытую БД
+
+        # создаём таблицу
         try:
-            self.cursor.execute(self.create_table_query)
+            self.cursor.execute(self.get_query(name=spider.collection_name, query='create'))
+            # self.cursor.execute(self.create_table_query)
             self.connection.commit()
         except sqlite3.OperationalError:
-            print(f"Таблица SQLite {self.table_name} уже существует...")
+            print(f"Таблица SQLite {spider.collection_name} уже существует...")
             pass
         else:
             pass
+
+        print(f"База данных: {base_name}")
+        print(f"Таблица в базе данных: {self.table_name}")
 
     def close_spider(self, spider):
         self.connection.close()
 
     def process_item(self, item, spider):
-        if getattr(item, 'collection_name'):
-            pass
-        else:
-            pass
-
-        pass
-        self.cursor.execute(self.insert_query, (
-            item.get('title'),
-            item.get('vacancy_id'),
-            item.get('link'),
-            item.get('employer'),
-            item.get('salary'),
-            item.get('date_publication')
+        try:
+            self.cursor.execute(self.get_query(name=spider.collection_name, query='insert'), (
+                item.get('_id'),
+                item.get('title'),
+                item.get('employer'),
+                item.get('salary_min'),
+                item.get('salary_max'),
+                item.get('salary_cur'),
+                item.get('date_publication'),
+                item.get('link')
+                )
             )
-        )
-        self.connection.commit()
+            self.connection.commit()
+        except sqlite3.IntegrityError as error_msg:
+            print(f". . . .SQLite,  {item['_id']=}, {error_msg}")
+        except sqlite3.OperationalError as error_msg:
+            print(f". . . .SQLite,  {item['_id']=}, {error_msg}")
+        else:
+            pass  # здесь всё хорошо!
+
         return item
 
 
@@ -108,7 +135,13 @@ class MongoDB_JobPipeline:
             self.mongodb_collection = self.mongodb_base[spider.name]
 
         # Заносим данные в базу!
-        self.mongodb_collection.insert_one(item)
+        try:
+            self.mongodb_collection.insert_one(item)
+        except pymongo.errors.DuplicateKeyError as errmsg:
+            print(f". . . .MongoDB, {item['_id']=}, DuplicateKeyError")
+        else:
+            pass  # здесь всё хорошо!
+
         return item
 
 
@@ -122,5 +155,9 @@ class JobPipeline:
 
     def process_item(self, item, spider):
         self.item_count += 1
-        print(f"{self.item_count:0>5}. employer={item.get('employer'):<20s}, {item['title']= }")
+        # print(f"{self.item_count:0>5}. employer={item.get('employer')=}")
+        print(f"{self.item_count:0>5}. "
+              f"{item.get('_id')}  "
+              f"{(item.get('employer')[:20:] if item.get('employer') else ''):<20s}  "
+              f"{item.get('title')}")
         return item
