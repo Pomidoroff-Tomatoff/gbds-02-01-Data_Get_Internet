@@ -84,8 +84,8 @@ HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     'job.pipelines.JobPipeline': 300,
-    'job.pipelines.MongoDB_JobPipeline': 295,
-    'job.pipelines.SQLite_JobPipeline': 293,
+    'job.pipelines.MongoDB_JobPipeline': 320,
+    'job.pipelines.SQLite_JobPipeline': 310,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

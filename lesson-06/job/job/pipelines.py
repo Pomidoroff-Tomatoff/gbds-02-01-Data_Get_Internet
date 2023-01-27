@@ -19,7 +19,6 @@ class SQLite_JobPipeline:
     base_name_std = 'job_base'
     base_name_ext = '.db'
     table_name = 'vacancies'
-    item_count = 0
 
     def get_query(self, name: str = table_name, query: str = 'insert'):
         ''' Подстановка в запрос: имя таблицы '''
@@ -52,12 +51,14 @@ class SQLite_JobPipeline:
                     link TEXT
                 )
                 '''
-                # vacancy_id INTEGER KEY,
             return create_table_query
-
 
     def open_spider(self, spider):
         ''' Иниализация класса при открытии паука '''
+
+        self.item_count_processed = 0  # счётчик всего
+        self.item_count_inserted = 0   # счётчик успеха
+
         if getattr(spider, 'collection_name'):
             # Задаём имя таблицы по имени атрибута коллекции в классе Item
             self.table_name = spider.collection_name
@@ -73,16 +74,17 @@ class SQLite_JobPipeline:
             # self.cursor.execute(self.create_table_query)
             self.connection.commit()
         except sqlite3.OperationalError:
-            print(f"Таблица SQLite {spider.collection_name} уже существует...")
+            print(f"SQLite: Таблица {spider.collection_name} уже существует...")
             pass
         else:
             pass
 
-        print(f"База данных: {base_name}")
-        print(f"Таблица в базе данных: {self.table_name}")
+        print(f"SQLite: База данных: {base_name}")
+        print(f"SQLite: Таблица БД:  {self.table_name}")
 
     def close_spider(self, spider):
         self.connection.close()
+        print(f"SQLite: items inserted: {self.item_count_inserted}")
 
     def process_item(self, item, spider):
         try:
@@ -102,8 +104,14 @@ class SQLite_JobPipeline:
             print(f". . . .SQLite,  {item['_id']=}, {error_msg}")
         except sqlite3.OperationalError as error_msg:
             print(f". . . .SQLite,  {item['_id']=}, {error_msg}")
+        except Exception as error_msg:
+            print(f". . . .SQLite,  {item['_id']=}, {error_msg}. Другое...")
         else:
-            pass  # здесь всё хорошо!
+            self.item_count_inserted += 1   # счётчик успеха
+            pass  # исключения не было
+        finally:
+            self.item_count_processed += 1  # счётчик всех операций
+            pass  # выполняем в любом случае
 
         return item
 
@@ -120,10 +128,13 @@ class MongoDB_JobPipeline:
     def open_spider(self, spider):
         self.mongodb_client = pymongo.MongoClient(self.mongodb_address)
         self.mongodb_base = self.mongodb_client[self.mongodb_base_name]
+        self.item_count_processed = 0  # счётчик всех операций
+        self.item_count_inserted = 0   # счётчик успеха
         return
 
     def close_spider(self, spider):
         self.mongodb_client.close()
+        print(f"MongoDB items inserted: {self.item_count_inserted}")
         return
 
     def process_item(self, item, spider):
@@ -135,12 +146,21 @@ class MongoDB_JobPipeline:
             self.mongodb_collection = self.mongodb_base[spider.name]
 
         # Заносим данные в базу!
+        # item.set('date_publication') = str(item.get('date_publication'))
+        # item.set(str(item.get('date_publication')))
+
         try:
             self.mongodb_collection.insert_one(item)
         except pymongo.errors.DuplicateKeyError as errmsg:
-            print(f". . . .MongoDB, {item['_id']=}, DuplicateKeyError")
+            print(f". . . .MongoDB, {item['_id']=}, DuplicateKeyError: дублирование ключа, строка не внесена.")
+        except Exception as errmsg:
+            print(f". . . .MongoDB, {item['_id']=}, {errmsg}.")
         else:
-            pass  # здесь всё хорошо!
+            self.item_count_inserted += 1   # счётчик успеха
+            pass  # когда нет исключения
+        finally:
+            self.item_count_processed += 1  # счётчик всех операций
+            pass  # всегда
 
         return item
 
@@ -151,13 +171,22 @@ class JobPipeline:
         self.item_count = 0
 
     def close_spider(self, spider):
-        print(f"Processed items is: {self.item_count}")
+        print(f"Processed items all:    {self.item_count}")
 
     def process_item(self, item, spider):
+        ''' Если здесь произойдёт ошибка без контроля исключений,
+            то текущая запись item не будет занесена в базы данных,
+            если в settings.py этот pipeline идёт первым.'''
         self.item_count += 1
-        # print(f"{self.item_count:0>5}. employer={item.get('employer')=}")
-        print(f"{self.item_count:0>5}. "
-              f"{item.get('_id')}  "
-              f"{(item.get('employer')[:20:] if item.get('employer') else ''):<20s}  "
-              f"{item.get('title')}")
+
+        print(f"{self.item_count:0>5}.", end=" ")
+        print(f"{item.get('_id')}", end=" ")
+        try:
+            if item.get('date_publication'):
+                print(f"{item.get('date_publication')}", end=" ")
+            print(f"{(item.get('employer')[:20:] if item.get('employer') else ''):<20s}", end="  ")
+            print(f"{(item.get('title')[:60:] if item.get('title') else ''):<60s}  ", end="\n")
+        except Exception as err_msg:
+            print(f"Ошибка вывода записи item: {err_msg}...")
+
         return item

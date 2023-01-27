@@ -2,6 +2,7 @@ import scrapy
 from w3lib.url import add_or_replace_parameters
 
 from job.items import HhList_JobItem
+from scrapy.loader import ItemLoader
 
 import job.spiders.job as job  # Библиотека для парсера
 
@@ -13,15 +14,12 @@ class HhListSpider(scrapy.Spider):
     # start_urls = ['https://hh.ru/search/vacancy?area=1&clusters=true&enable_snippets=true&items_on_page=20&ored_clusters=true&search_field=description&text=python&order_by=publication_time&hhtmFrom=vacancy_search_list']
     start_url = 'https://hh.ru/search/vacancy/'
 
+    # Имя для MongoDB и MySQL для этого паучка
     collection_name = HhList_JobItem.collection_name
 
+    # счётчики-ограничители
     count_pages = 0
-    max_count_pages = 500000  # максимальное кол. стриниц со списком вакансий, для отладки
-
-    # Параметры поиска вакансий
-    # -- примантировать параметры к начальной ссылке можно при помощи хорошей функции
-    #      add_or_replace_parameters (w3lib.url)
-    #    позволяющей не беспокоится о правилах стыковки частей запроса.
+    max_count_pages = 500000  # макс. количество страниц со списком вакансий, для отладки
 
     item_on_page = 20
     params = {
@@ -48,6 +46,10 @@ class HhListSpider(scrapy.Spider):
     }
 
     def start_requests(self):
+        # Параметры поиска вакансий
+        # -- примантировать параметры к начальной ссылке можно при помощи функции
+        #      add_or_replace_parameters (w3lib.url)
+        #    позволяющей не беспокоится о правилах стыковки частей запроса.
         response = scrapy.Request(
             url=add_or_replace_parameters(self.start_url, self.params),
             callback=self.parse)
@@ -55,11 +57,16 @@ class HhListSpider(scrapy.Spider):
 
     def parse(self, response):
         self.count_pages += 1
+        if self.count_pages > self.max_count_pages:   # ограничение
+            return None  # хватит...
+
+        # текущая страница: находим все объекты с вакансиями и разбираем каждую
         vacancies = response.xpath('//div[@id="a11y-main-content"]/div[@class="serp-item"]')
-        print(f"Page processing is: {self.count_pages:0>3}, {len(vacancies)=}")
+        print(f"PAGE PROCESSING:{self.count_pages:->5}, {len(vacancies)=}")
         for vacancy in vacancies:
             yield self.parse_item(vacancy)
 
+        # следующая страница, если есть...
         next = response.xpath('//div[@data-qa="pager-block"]/a[@data-qa="pager-next"]/@href').get()
         if next:
             if self.count_pages < self.max_count_pages:

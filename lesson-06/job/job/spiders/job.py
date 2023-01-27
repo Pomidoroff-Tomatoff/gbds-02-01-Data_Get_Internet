@@ -1,7 +1,75 @@
-# БИБЛИОТЕКА
+''' БИБЛИОТЕКА для очистки данных сайта hh.ru '''
+
+import datetime
+
+
+import datetime
+
+
+def date_convert(values: list = [], lang: str = 'RU'):
+    '''Преобразование даты вида "24 января 2023" к типу date (2023-01-26)'''
+
+    def current_date():
+        return str(datetime.datetime.now().date())
+
+    # Входящие данные:
+    # ['Вакансия опубликована ', '24\xa0января\xa02023', ' в ', 'Москве']
+
+    # Язык месяца:
+    if lang.upper() == "RU":
+        lang_index = 0
+    elif lang.upper() == "EN":
+        lang_index = 1
+    else:
+        print(f"Дата: ОШИБКА -- неверно выбран язык месяца \"{lang}\" {values}, аварийно используется RU.")
+        lang_index = 0
+
+    if len(values) <= 1:
+        print(f"Дата: ОШИБКА -- неполные или пустые данные \"{values}\"")
+        return current_date()
+
+    value = values[1]
+    date_elements = value.split()
+    months_name = date_elements[1]
+
+    months = {
+        1:  ['январ',   'january'],
+        2:  ['феврал',  'febrary'],
+        3:  ['март',    'march'],
+        4:  ['апрел',   'april'],
+        5:  ['май',     'may'],
+        6:  ['июн',     'june'],
+        7:  ['июл',     'july'],
+        8:  ['август',  'august'],
+        9:  ['сентябр', 'september'],
+        10: ['октябр',  'october'],
+        11: ['ноябр',   'november'],
+        12: ['декабр',  'december'],
+    }
+
+    months_number = 0
+    for number, name in months.items():
+        if name[lang_index] in months_name:
+            months_number = number
+            break
+
+    date_elements[1] = months_number  # поменяли слово на числовое обозначение месяца
+    date_string = "-".join(map(str, date_elements))
+
+    try:
+        date_converted = datetime.datetime.strptime(date_string, "%d-%m-%Y").date()
+    except Exception as err_message:
+        print(f"Ошибка с датой {value}: {err_message}")
+        date_converted = current_date()
+    finally:
+        date_converted = str(date_converted)
+
+    return date_converted
+    # END date_convert()
+
 
 def join_clear(words: list = []) -> str:
-    ''' объединяем список слов в строку заменяя спец-пробелы '''
+    ''' объединяем список слов в строку заменяя спец-пробелы так, чтобы цифры ост'''
 
     def join_digit_word(word: str = "") -> str:
         ''' Схлопнуть спец-пробел между цифрами,
@@ -50,15 +118,12 @@ def duplicate_remover(values: list = None) -> list:
 def get_maney(money_range_str: str = "") -> dict:
     ''' Выделим цифровые значения зарплаты из строки '''
 
-    pay = {'min': 0, 'max': 0, 'cur': 'руб'}
+    pay = {'min': 0, 'max': 0, 'cur': ''}
 
     if not money_range_str:
         return pay
 
-    if money_range_str.upper() == 'з/п не указана'.upper():
-        pay['min'] = 0
-        pay['max'] = 0
-        pay['cur'] = ''
+    if " ".join(money_range_str.split()) == r'з/п не указана':
         return pay
 
     # Специальные пробельные символы необходимо "схлопнуть"
@@ -87,15 +152,13 @@ def get_maney(money_range_str: str = "") -> dict:
             money_words.pop(-1)
             continue
 
-        if money_words[0].upper() == "от".upper() or \
-                money_words[0].upper() == "from".upper():
+        if money_words[0].upper() in ["ОТ", "FROM"]:
             pay['min'] = int(money_words[1])
             money_words.pop(1)
             money_words.pop(0)
             continue
 
-        if money_words[0].upper() == "до".upper() or money_words[0] == "-" or money_words[0] == "–" or money_words[
-            0] == "—" or money_words[0] == "--":
+        if money_words[0].upper() in ["ДО", "-", "–", "—", "--"]:
             pay['max'] = int(money_words[1])
             money_words.pop(1)
             money_words.pop(0)
@@ -119,3 +182,27 @@ def get_maney(money_range_str: str = "") -> dict:
 
     return pay
     # END get_maney()
+
+
+if __name__ == '__main__':
+    print(f"Библиотека {__name__} запущена как самостоятельный модуль.")
+
+    print(f"Тест join_clear")
+
+    words = [
+        'abc\u00a0123\u202f444',
+        '333\u00a0000\tР',
+        'от\u00a0123\u202f444\u202f444\u00a0руб до 333\u00a0000\tР.',
+        '',
+        '333\u00a0000\tР',
+        '   a', ]
+
+    for word in words:
+        print(f"{word = }")
+    else:
+        print(f"\n")
+    print(join_clear(words))
+
+    pass
+else:
+    print(f"Библиотека {__name__} импортирована.")

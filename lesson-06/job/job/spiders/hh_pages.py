@@ -17,7 +17,7 @@ class HhPagesSpider(scrapy.Spider):
 
     collection_name = HhPages_JobItem.collection_name
 
-    splash_mode = True  # Включение рендеринга SPLASH: True
+    splash_mode = True   # Включение рендеринга SPLASH: True
     count_pages = 0
     max_count_pages = 500000
 
@@ -102,18 +102,18 @@ class HhPagesSpider(scrapy.Spider):
 
     def parse(self, response):
         self.count_pages += 1
+        if self.count_pages > self.max_count_pages:
+            logging.log(logging.INFO, f"Количество страниц списка {self.count_pages + 1} вышло за максимум, листание остановлено...")
+            return None
+
         vacancies = response.xpath('//div[@id="a11y-main-content"]')
         vacancies = vacancies.xpath('./div[contains(@data-qa, "vacancy-serp__vacancy")]')
-        print(f"PAGE PROCESSING: {self.count_pages:0>5}, {len(vacancies)=}")
+        print(f"PAGE PROCESSING:{self.count_pages:->5}, {len(vacancies)=}")
 
         for vacancy in vacancies:
             link = vacancy.xpath('.//h3/*/a[@data-qa="serp-item__title"]/@href').get().split('?')[0]
             yield self.get_rendering_request(url=link, callback=self.parse_item)
             # yield response.follow(url=link, callback=self.parse_item)
-
-        if self.count_pages > self.max_count_pages:
-            logging.log(logging.INFO, f"Количество страниц списка {self.count_pages + 1} вышло за максимум, листание остановлено...")
-            return None
 
         next = response.xpath('//a[@data-qa="pager-next"]/@href').get()
         if next:
@@ -126,8 +126,9 @@ class HhPagesSpider(scrapy.Spider):
             # ВНИМАНИЕ: хитрый заголовок!
             #   После тега 'h1' указывать тег 'span' нельзя, иначе возвращается None,
             #   вместо текста заголовка
-            _id=
-                response.url.split('/vacancy/')[-1],
+            _id=int(
+                response.url.split('/vacancy/')[-1]
+            ),
             title=
                 response.xpath('//div[@class="vacancy-title"]/h1/text()').get(),
             employer=job.join_clear(
@@ -135,8 +136,12 @@ class HhPagesSpider(scrapy.Spider):
                     response.xpath('//span[@data-qa="bloko-header-2"]/text()').getall()
                 )
             ),
-            date_publication=job.join_clear(
-                response.xpath('//p[@class="vacancy-creation-time-redesigned"]/text()').getall()),
+            date_publication=job.date_convert(
+                response.xpath('//p[@class="vacancy-creation-time-redesigned"]/text()').getall()
+            ),
+                # https://hh.ru/vacancy/76132760
+                # <p class="vacancy-creation-time">
+                # ['Вакансия опубликована ', '24\xa0января\xa02023', ' в ', 'Москве']
             link =
                 response.url
         )
@@ -149,18 +154,3 @@ class HhPagesSpider(scrapy.Spider):
         item['salary_max'] = salary['max']
         item['salary_cur'] = salary['cur']
         yield item
-
-    # БИБЛИОТЕКА КЛАССА переехала в job.py
-
-# ZIP of code: запас использованного ранее кода
-'''
-    def start_requests(self):
-        # Доступ с параметрами нужен только к первой странице списка,
-        # переход на следующие странице выполняется ссылкой в кнопке перехода на сл. стр.
-        response = scrapy.Request(
-            url=add_or_replace_parameters(self.start_url, self.params),
-            callback=self.parse)
-        yield response
-        
-    # yield response.follow(url=next_page, callback=self.parse)
-'''
