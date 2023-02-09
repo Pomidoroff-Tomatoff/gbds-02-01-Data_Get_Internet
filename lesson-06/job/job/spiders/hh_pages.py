@@ -137,8 +137,9 @@ class HhPagesSpider(scrapy.Spider):
                 )
             ),
             date_publication=job.date_convert(
-                response.xpath('//p[@class="vacancy-creation-time-redesigned"]/text()').getall()
+                response.xpath('//p[contains(@class, "vacancy-creation-time")]/text()').getall()
             ),
+                # Варианты: vacancy-creation-time, vacancy-creation-time-redesigned
                 # https://hh.ru/vacancy/76132760
                 # <p class="vacancy-creation-time">
                 # ['Вакансия опубликована ', '24\xa0января\xa02023', ' в ', 'Москве']

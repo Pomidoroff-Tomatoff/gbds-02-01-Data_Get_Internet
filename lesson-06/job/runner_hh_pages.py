@@ -1,9 +1,5 @@
 ''' GB BigData / Олег Гладкий (https://gb.ru/users/3837199) // домашнее задание
     Запуск паука непосредственно из модуля Python-а (а не shell-командой "scrapy crawl...").
-    Цели и задачи подхода:
-        -- отладки кода
-        -- передача аргументов
-        -- запуск нескольких пауков параллельно в рамках одного процесса
     Технология:
         CrawlerProcess
 '''
@@ -14,7 +10,7 @@ from scrapy.utils.log import configure_logging
 from scrapy.utils.project import get_project_settings
 
 # Паук:
-from books_ItemLoader.spiders.books import BooksSpider
+from job.spiders.hh_pages import HhPagesSpider
 
 
 if __name__ == '__main__':
@@ -25,11 +21,11 @@ if __name__ == '__main__':
 
     # CrawlerProcess
 
-    process = CrawlerProcess(settings)  # = CrawlerProcess(settings, {'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'})
+    process = CrawlerProcess(settings)
 
     # Параметры процесса
 
-    process.crawl(BooksSpider, categories='Travel,Classics', key2='toscrape.com')
+    process.crawl(HhPagesSpider)
 
     # Запускаем процесс
     # -- the script will block here until the crawling is finished
