@@ -28,7 +28,7 @@ class SandboxCsrfJavascriptSpider(scrapy.Spider):
         # 'SPLASH_URL': 'http://localhost:8050',
         # 'SPLASH_URL': 'http://127.0.0.1:8050/run',
         'SPLASH_URL': 'https://s1.onekkk.com/',
-        # Двойники: (недаюсь, что понимаю)
+        # Двойники: (недеаюсь, что понимаю)
         # Класс, используемый для обнаружения и фильтрации повторяющихся запросов.
         'DUPEFILTER_CLASS': 'scrapy_splash.SplashAwareDupeFilter',
         # Класс, реализующий серверную часть хранилища кэша.

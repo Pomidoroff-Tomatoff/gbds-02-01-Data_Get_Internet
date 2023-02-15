@@ -37,9 +37,6 @@ class SandboxCsrfSpider(scrapy.Spider):
                 'user': username,       # адрес поля с именем и значение
                 'pass': password,       # адрес поля с паролем и значение
             },
-            # formnumber = 1,
-            clickdata = {'name': 'Login →'},
-            # dont_click = True,
             callback=self.after_login
         )
         yield form
