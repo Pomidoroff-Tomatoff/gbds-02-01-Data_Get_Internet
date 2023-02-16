@@ -44,5 +44,5 @@ class SandboxCsrfSpider(scrapy.Spider):
 
     def after_login(self, response):
         message = response.xpath('//div[@class="col-md-4 col-md-offset-4"]/text()').get().strip()
-        print(f"Результат входа на сайт:\n  {response.url=} \n  {message=}")
+        print(f"Результат входа на сайт:\n  {response.url=} \n  {message = }")
         return None

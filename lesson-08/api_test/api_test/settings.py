@@ -1,4 +1,4 @@
-# Scrapy settings for login project
+# Scrapy settings for api_test project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -7,14 +7,14 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'login'
+BOT_NAME = 'api_test'
 
-SPIDER_MODULES = ['login.spiders']
-NEWSPIDER_MODULE = 'login.spiders'
+SPIDER_MODULES = ['api_test.spiders']
+NEWSPIDER_MODULE = 'api_test.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'login (+http://www.yourdomain.com)'
+#USER_AGENT = 'api_test (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
@@ -45,13 +45,13 @@ ROBOTSTXT_OBEY = False
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    'login.middlewares.LoginSpiderMiddleware': 543,
+#    'api_test.middlewares.ApiTestSpiderMiddleware': 543,
 #}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    'login.middlewares.LoginDownloaderMiddleware': 543,
+#    'api_test.middlewares.ApiTestDownloaderMiddleware': 543,
 #}
 
 # Enable or disable extensions
@@ -62,9 +62,9 @@ ROBOTSTXT_OBEY = False
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'login.pipelines.LoginPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   'api_test.pipelines.ApiTestPipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
@@ -89,4 +89,4 @@ ROBOTSTXT_OBEY = False
 
 # Set settings whose default value is deprecated to a future-proof value
 REQUEST_FINGERPRINTER_IMPLEMENTATION = '2.7'
-TWISTED_REACTOR = 'twisted.internet.selectreactor.SelectReactor'
+TWISTED_REACTOR = 'twisted.internet.asyncioreactor.AsyncioSelectorReactor'
