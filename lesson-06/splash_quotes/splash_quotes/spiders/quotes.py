@@ -26,10 +26,11 @@ class QuotesSpider(scrapy.Spider):
 
         # 'SPLASH_URL': 'http://localhost:8050',
         # 'SPLASH_URL': 'http://127.0.0.1:8050/run',
+        'SPLASH_URL': 'http://192.168.0.103:8050',
         # Используем сервер в инете со Splash-ем, случайно найденный...
         # 'SPLASH_URL': 'https://s1.onekkk.com/',
 
-        # Описание других параметров:
+        # Описание других параметров Splash:
         # https://pypi.python.org/pypi/scrapy-splash
     }
 
@@ -47,8 +48,8 @@ class QuotesSpider(scrapy.Spider):
     def get_rendering_request(self, url="", callback=None):
         if callback is not None:
             return SplashRequest(
-                url=url,          # Сайт, который нужно рендерить
-                endpoint='execute',  # Выполнить скрипт
+                url=url,             # Сайт, который нужно рендерить
+                endpoint='execute',  # Выполнить скрипт?
                 callback=callback,   # После выполнения скрипта ответ передать ф. self.parse()
                 args={'lua_source': self.script}  # Скрипт для выполнения
             )
