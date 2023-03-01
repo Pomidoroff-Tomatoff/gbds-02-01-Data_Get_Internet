@@ -36,7 +36,7 @@ if __name__ == '__main__':
     #   то этот неключевой аргумент переопределит имя паука, так как изменит атрибут name (паука) на это значение.
     #   То есть имя паука в атрибуте класса self.name изменится.
 
-    process.crawl(BooksSpider, "MyBook_NewSpiderName", categories='Travel,Classics', key2='toscrape.com')
+    process.crawl(BooksSpider, "NewSpiderName", categories='Travel,Classics', key2='toscrape.com')
 
     # Запускаем процесс
     # -- the script will block here until the crawling is finished

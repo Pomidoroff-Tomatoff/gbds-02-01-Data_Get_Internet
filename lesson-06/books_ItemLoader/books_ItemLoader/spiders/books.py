@@ -18,6 +18,7 @@ class BooksSpider(scrapy.Spider):
     def parse(self, response):
 
         # 01/Новая технология: response
+        # работаем с 1-им объектом -- response
 
         iloader = ItemLoader(item=BooksItemloaderItem(), response=response)
         iloader.add_xpath('title', '//div[@class="col-sm-8 h1"]/a/text()')
@@ -25,8 +26,8 @@ class BooksSpider(scrapy.Spider):
         yield item
 
         # 02/Новая технология: selector
-        # -- Используем цикл for
-        #    для предварительно набранного списка селекторов
+        # -- работаем с указателем на элемент из response, то есть селектором
+        # -- список таких селекторов позволяет использовать в обработке цикл for
 
         books = response.css("article.product_pod")
         for book in books:

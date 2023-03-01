@@ -106,12 +106,10 @@ class SQLite_JobPipeline:
             print(f". . . .SQLite,  {item['_id']=}, {error_msg}")
         except Exception as error_msg:
             print(f". . . .SQLite,  {item['_id']=}, {error_msg}. Другое...")
-        else:
+        else:     # успех, исключения не было
             self.item_count_inserted += 1   # счётчик успеха
-            pass  # исключения не было
-        finally:
+        finally:  # всегда, выполняем в любом случае
             self.item_count_processed += 1  # счётчик всех операций
-            pass  # выполняем в любом случае
 
         return item
 
@@ -145,11 +143,10 @@ class MongoDB_JobPipeline:
         else:
             self.mongodb_collection = self.mongodb_base[spider.name]
 
-        # Заносим данные в базу!
-        # item.set('date_publication') = str(item.get('date_publication'))
-        # item.set(str(item.get('date_publication')))
+        # Преобразование времени в строку, так как МонгоДБ не поддерживает тип даты
+        # item['date_publication'] = str(item.get('date_publication').date())
 
-        try:
+        try:  # Заносим в БД
             self.mongodb_collection.insert_one(item)
         except pymongo.errors.DuplicateKeyError as errmsg:
             print(f". . . .MongoDB, {item['_id']=}, DuplicateKeyError: дублирование ключа, строка не внесена.")
@@ -157,7 +154,7 @@ class MongoDB_JobPipeline:
             print(f". . . .MongoDB, {item['_id']=}, {errmsg}.")
         else:
             self.item_count_inserted += 1   # счётчик успеха
-            pass  # когда нет исключения
+            pass  # успех! когда нет исключения
         finally:
             self.item_count_processed += 1  # счётчик всех операций
             pass  # всегда
@@ -184,8 +181,10 @@ class JobPipeline:
         try:
             if item.get('date_publication'):
                 print(f"{item.get('date_publication')}", end=" ")
-            print(f"{(item.get('employer')[:20:] if item.get('employer') else ''):<20s}", end="  ")
-            print(f"{(item.get('title')[:60:] if item.get('title') else ''):<60s}  ", end="\n")
+            if item.get('employer'):
+                print(f"{(item.get('employer')[:20:] if item.get('employer') else ''):<20s}", end="  ")
+            if item.get('title'):
+                print(f"{(item.get('title')[:60:] if item.get('title') else ''):<60s}  ", end="\n")
         except Exception as err_msg:
             print(f"Ошибка вывода записи item: {err_msg}...")
 

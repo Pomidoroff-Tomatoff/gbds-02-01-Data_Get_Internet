@@ -30,7 +30,7 @@ class MongoDB_QuotesPipeline:
         return
 
     def process_item(self, item, spider):
-        self.mongodb_collection = self.mongodb_base[item.collection_name]  # collection name == class Item Name
+        self.mongodb_collection = self.mongodb_base[item.collection_name]  # collection name == item attribute
         self.mongodb_collection.insert_one(item)
         return item
 
