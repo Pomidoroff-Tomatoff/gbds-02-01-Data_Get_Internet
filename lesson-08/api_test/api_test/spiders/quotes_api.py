@@ -8,32 +8,29 @@ import json
 class QuotesApiSpider(scrapy.Spider):
     name = 'quotes_api'
     allowed_domains = ['quotes.toscrape.com']
-    page_flag = True
+    start_url = 'https://quotes.toscrape.com/api/quotes'
 
     custom_settings = {
-        # LOG_LEVEL In list: CRITICAL, ERROR, WARNING, INFO, DEBUG (https://docs.scrapy.org/en/latest/topics/settings.html#std-setting-LOG_LEVEL)
-        'LOG_LEVEL': 'ERROR',
+        'LOG_LEVEL': 'ERROR',    # LOG_LEVEL In list: CRITICAL, ERROR, WARNING, INFO, DEBUG (https://docs.scrapy.org/en/latest/topics/settings.html#std-setting-LOG_LEVEL)
         'COOKIES_ENABLED': True,
         'ROBOTSTXT_OBEY': False,
-        # Set settings whose default value is deprecated to a future-proof value
-        'TWISTED_REACTOR': 'twisted.internet.selectreactor.SelectReactor'
+        'TWISTED_REACTOR': 'twisted.internet.selectreactor.SelectReactor'  # Для запускали runner
     }
 
     def start_requests(self):
-        url = 'https://quotes.toscrape.com/api/quotes'
-        page = 0
-        while self.page_flag and (page := page + 1) < 100:
-            request = scrapy.Request(
-                url = url + f'?page={page}',
-                callback = self.parse,
-            )
-            yield request
-
+        ''' Не обязательный метод, можно обойтись стартовой ссылкой.
+            Но всё же отработаем здесь этот подход
+        '''
+        page = 1  # Внимание, считать начинаем с 1-цы, а не нуля!
+        request = scrapy.Request(
+            url = self.start_url + f'?page={page}',
+            callback = self.parse, )
+        yield request
         return None
 
-    def parse(self, response):
-        resp_json = json.loads(response.body)       # Получаем JSON из ответа
-        quotes = resp_json.get('quotes')
+    def parse(self, response, **kwargs):
+        json_response = json.loads(response.body)       # Получаем JSON из ответа
+        quotes = json_response.get('quotes')
         for quote in quotes:
             item = {
                 'author': quote.get('author').get('name'),
@@ -42,5 +39,13 @@ class QuotesApiSpider(scrapy.Spider):
             }
             yield item
 
-        self.page_flag = resp_json.get('has_next')  # Следующая страница существует?
+        print(f"Загружена страница: {json_response.get('page')}, флаг продолжения: {json_response.get('has_next')}")
+        # Следующая страница
+        if json_response.get('has_next'):
+            page = json_response.get('page') + 1
+            request = scrapy.Request(
+                url = self.start_url + f'?page={page}',
+                callback = self.parse,)
+            yield request
+
         return None
