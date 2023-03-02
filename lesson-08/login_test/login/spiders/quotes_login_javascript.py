@@ -62,7 +62,7 @@ class QuotesLoginJavascriptSpider(scrapy.Spider):
                     >> Настройки settings.py не все включены? Какие-то хитрые...
                     >> Windows-7: старая версия ОС и Сплэша...
         '''
-        if not True:
+        if True:
             print(f"start_request: SCRAPY + SPLASH-plugin:\n  start_url =   {self.start_url}")
             request = SplashRequest(
                 url=self.start_url,
