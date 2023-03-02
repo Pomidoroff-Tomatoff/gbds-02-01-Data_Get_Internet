@@ -33,6 +33,7 @@ ROBOTSTXT_OBEY = False
 # SPLASH_URL = 'http://localhost:8050'
 # SPLASH_URL = 'http://127.0.0.1:8050/run'
 SPLASH_URL = 'https://s1.onekkk.com/'
+# SPLASH_URL = 'http://192.168.0.103:8050'
 
 # Двойники: (недаюсь, что понимаю)
 # Класс, используемый для обнаружения и фильтрации повторяющихся запросов.

@@ -21,7 +21,7 @@ class QuotesLoginSpider(scrapy.Spider):
         'COOKIES_ENABLED': True,
         }
 
-    def parse(self, response):
+    def parse(self, response, **kwargs):
         csrf_token = response.xpath('//input[@name="csrf_token"]/@value').get()
         username = 'admin'
         password = 'admin'
