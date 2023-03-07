@@ -18,7 +18,7 @@ class HhListSpider(scrapy.Spider):
     collection_name = HhList_JobItem.collection_name
 
     # счётчики-ограничители
-    count_pages = 0
+    count_pages = 1
     max_count_pages = 500000  # макс. количество страниц со списком вакансий, для отладки
 
     item_on_page = 20
@@ -50,27 +50,28 @@ class HhListSpider(scrapy.Spider):
         # -- примантировать параметры к начальной ссылке можно при помощи функции
         #      add_or_replace_parameters (w3lib.url)
         #    позволяющей не беспокоится о правилах стыковки частей запроса.
-        response = scrapy.Request(
+        request = scrapy.Request(
             url=add_or_replace_parameters(self.start_url, self.params),
             callback=self.parse)
-        yield response
+        yield request
 
     def parse(self, response):
-        self.count_pages += 1
-        if self.count_pages > self.max_count_pages:   # ограничение
-            return None  # хватит...
-
         # текущая страница: находим все объекты с вакансиями и разбираем каждую
-        vacancies = response.xpath('//div[@id="a11y-main-content"]/div[@class="serp-item"]')
-        print(f"PAGE PROCESSING:{self.count_pages:->5}, {len(vacancies)=}")
+        vacancies = response.xpath('//div[@id="a11y-main-content"]/div[contains(@class, "serp-item")]')
+        print(f"PAGE PROCESSING:{self.count_pages:->5}, {len(vacancies)=}")  # Порядок обрабатываемой страницы может не соотв. номеру страницы.
         for vacancy in vacancies:
             yield self.parse_item(vacancy)
+
+        # Ограничение объёма обработки страниц: можно дальше?
+        if self.count_pages >= self.max_count_pages:   # ограничение
+            return None  # хватит...
+        else:
+            self.count_pages += 1
 
         # следующая страница, если есть...
         next = response.xpath('//div[@data-qa="pager-block"]/a[@data-qa="pager-next"]/@href').get()
         if next:
-            if self.count_pages < self.max_count_pages:
-                yield response.follow(url=next, callback=self.parse)
+            yield response.follow(url=next, callback=self.parse)
         return None
 
     def parse_item(self, vacancy):

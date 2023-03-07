@@ -17,7 +17,7 @@ class HhPagesSpider(scrapy.Spider):
 
     collection_name = HhPages_JobItem.collection_name
 
-    splash_mode = True   # Включение рендеринга SPLASH: True
+    splash_mode = False   # Включение рендеринга SPLASH: True
     count_pages = 0
     max_count_pages = 500000
 
