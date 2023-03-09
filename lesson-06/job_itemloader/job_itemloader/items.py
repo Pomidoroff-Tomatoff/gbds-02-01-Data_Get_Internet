@@ -54,7 +54,7 @@ def link_vacancies(value):
 
 
 def get_money_min(value):
-    ''' Разбор данных и получение всех значений зарплаты.
+    ''' Разбор данных и получение всех значений зарплаты. Возвращаем только мин-зарплату.
         Запоминаем _ID, для которых эти значения имеют смысл. '''
     global KEY_VACANCIES_ID, MONEY_ID, MONEY_MIN, MONEY_MAX, MONEY_CUR
     salary = get_money(join_clear(value))
@@ -66,7 +66,7 @@ def get_money_min(value):
 
 
 def get_money_max(value):
-    ''' Возврат ранее сохранённой МАКС зарплаты в глобальных переменных.
+    ''' Возврат ранее сохранённой МАКС-зарплаты в глобальной переменной.
         Учитываем _ID, для которого значение макс-зарплаты актуально. '''
     global KEY_VACANCIES_ID, MONEY_ID, MONEY_MIN, MONEY_MAX, MONEY_CUR
     if MONEY_ID != KEY_VACANCIES_ID:
@@ -102,19 +102,19 @@ class HhList_itemloader_JobItem(scrapy.Item):
         output_processor=TakeFirst()
     )
     employer = scrapy.Field(
-        input_processor=Compose(join_clear),  # Join(),
+        input_processor=Compose(join_clear),
         output_processor=TakeFirst()
     )
     salary_min = scrapy.Field(
-        input_processor=Compose(get_money_min),
+        input_processor=Compose(get_money_min),    # "от 1000 до 2000 руб." -- Входящая строка
         output_processor=TakeFirst()
     )
     salary_max = scrapy.Field(
-        input_processor=Compose(get_money_max),
+        input_processor=Compose(get_money_max),    # "от 1000 до 2000 руб." -- для этих 3-х полей
         output_processor=TakeFirst()
     )
     salary_cur = scrapy.Field(
-        input_processor=Compose(get_money_cur),
+        input_processor=Compose(get_money_cur),    # "от 1000 до 2000 руб." -- одинакова!
         output_processor=TakeFirst()
     )
     link = scrapy.Field(
