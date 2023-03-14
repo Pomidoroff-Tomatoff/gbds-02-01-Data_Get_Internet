@@ -2,7 +2,7 @@ import scrapy
 from scrapy.loader import ItemLoader
 from w3lib.url import add_or_replace_parameters
 
-from job.items import HhList_itemloader_JobItem
+from job_itemloader.items import HhList_itemloader_JobItem
 
 
 class HhListItemloaderSpider(scrapy.Spider):
@@ -16,7 +16,7 @@ class HhListItemloaderSpider(scrapy.Spider):
 
     # счётчики-ограничители
     count_pages = 1
-    max_count_pages = 500000  # макс. количество страниц со списком вакансий, для отладки
+    max_count_pages = 2  # 500000  # макс. количество страниц со списком вакансий, для отладки
 
 
     custom_settings = {
@@ -24,14 +24,6 @@ class HhListItemloaderSpider(scrapy.Spider):
         # https://docs.scrapy.org/en/latest/topics/settings.html#std-setting-LOG_LEVEL
         # In list: CRITICAL, ERROR, WARNING, INFO, DEBUG
         'LOG_LEVEL': 'ERROR',
-
-        # Configure item pipelines
-        # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-        'ITEM_PIPELINES': {
-            'job.pipelines.JobPipeline': 300,
-            'job.pipelines.MongoDB_JobPipeline': 320,
-            'job.pipelines.SQLite_JobPipeline': 310,
-        },
 
         # Описание других параметров:
         # https://pypi.python.org/pypi/scrapy-splash
@@ -61,32 +53,40 @@ class HhListItemloaderSpider(scrapy.Spider):
 
     def parse(self, response):
         vacancies = response.xpath('//div[@id="a11y-main-content"]/div[contains(@class, "serp-item")]')
-        print(f"PAGE PROCESSING:{self.count_pages:->5}, {len(vacancies)=}")
+
+        # Вывод на экран инфо об обрабатываемой странице и количестве вакансий на ней.
+        if (page_processing := response.url.split("page=")[-1]).isdigit():
+            page_processing = int(page_processing)
+            page_processing += 1
+        else:
+            page_processing = 1
+        print(f"PAGE PROCESSING: {page_processing:->5} ({self.count_pages:->5}), {len(vacancies)=}")
+
         for vacancy in vacancies:
             yield self.parse_item(vacancy)
 
-        # следующая страница, если есть...
-        self.count_pages += 1
-        if self.count_pages > self.max_count_pages:   # ограничение
+        # Ограничение страниц: можно?
+        if self.count_pages >= self.max_count_pages:   # ограничение
             return None  # хватит...
+        else:
+            self.count_pages += 1
 
-        # переход
+        # Переход? Нет! Это запрос загрузки следующей страницы асинхронно. Можно было поставить вначале метода.
         next = response.xpath('//div[@data-qa="pager-block"]/a[@data-qa="pager-next"]/@href').get()
         if next:
-            if self.count_pages < self.max_count_pages:
-                yield response.follow(url=next, callback=self.parse)
+            yield response.follow(url=next, callback=self.parse)
         return None
 
     def parse_item(self, selector):
 
-        item = ItemLoader(item=HhList_itemloader_JobItem(), selector=selector)
+        item = ItemLoader(item=HhList_itemloader_JobItem(), selector=selector)  # Указываем selector, так как получаем не весь response, а часть с указателем (селектором).
 
         item.add_xpath('_id', './/a[@data-qa="vacancy-serp__vacancy_response"]/@href')
         item.add_xpath('title', './/a[@class="serp-item__title"]/text()')
         item.add_xpath('employer', './/a[@data-qa="vacancy-serp__vacancy-employer"]/text()')
         item.add_xpath('salary_min', './/span[@data-qa="vacancy-serp__vacancy-compensation"]/text()')
-        item.add_value('salary_max', 0)
-        item.add_value('salary_cur', 0)
+        item.add_value('salary_max', -1)  # Для этих 3-х полей "salary_" указатель xpath одинаковый!
+        item.add_value('salary_cur', -1)  # Поэтому обрабатываются одной функцией...
         item.add_value('link', '')
 
         return item.load_item()

@@ -18,7 +18,7 @@ from threading import Thread
 import time
 
 # Паук:
-from job.spiders.hh_list_itemloader import HhListItemloaderSpider
+from job_itemloader.spiders.hh_list_itemloader import HhListItemloaderSpider
 
 
 if __name__ == '__main__':
