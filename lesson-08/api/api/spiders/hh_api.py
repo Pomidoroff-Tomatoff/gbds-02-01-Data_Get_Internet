@@ -1,6 +1,16 @@
 ''' GB BigData / Олег Гладкий (https://gb.ru/users/3837199) // Parsing, https://gb.ru/lessons/262705/
     ДЗ-8: Scrapy API & Login
-    https://habr.com/ru/company/hh/blog/303168/
+
+    API, быстрый старт:
+        https://habr.com/ru/company/hh/blog/303168/
+    hh API:
+        https://github.com/hhru/api/blob/master/README.md#Ресурсы
+    Дополнительно:
+        https://temofeev.ru/info/articles/rabota-s-api-headhunter-pri-pomoshchi-python/
+
+    Нехватает работы с параметрами API:
+        -- их очень много
+        -- можно-ли добавлять вложенными словарями?
 '''
 
 import scrapy
@@ -22,12 +32,12 @@ class HhApiSpider(scrapy.Spider):
     # jornal = logging.getLogger(__name__)  # журнал
 
     custom_settings = {
-        'USER_AGENT': 'api-test-agent',
+        'USER_AGENT': 'api-test-agent',     # Объязательно для тестового доступа на hh или ничего не вернётся!
         'LOG_LEVEL': 'WARNING',             # LOG_LEVEL In list: CRITICAL, ERROR, WARNING, INFO, DEBUG (https://docs.scrapy.org/en/latest/topics/settings.html#std-setting-LOG_LEVEL)
-        'FEED_EXPORT_ENCODING': 'UTF-8',  # Unicode
+        'FEED_EXPORT_ENCODING': 'UTF-8',    # Unicode
         'COOKIES_ENABLED': True,
         'ROBOTSTXT_OBEY': False,
-        'TWISTED_REACTOR': 'twisted.internet.selectreactor.SelectReactor',  # Для запускали runner
+        'TWISTED_REACTOR': 'twisted.internet.selectreactor.SelectReactor',  # Для запуска паука приложением Питона runner_hh_api.py
     }
 
     def __init__(self, *args, **kwargs):
@@ -42,7 +52,9 @@ class HhApiSpider(scrapy.Spider):
             for key, value in kwargs.items():
                 if key.upper() == "keyword".upper():
                     self.keyword = value
+                    break
 
+        # Параметры запроса паука
         self.logger.warning(f"Ключевое слово поиска: {self.keyword=}")
         self.params = {
             'area': 1,
@@ -56,7 +68,7 @@ class HhApiSpider(scrapy.Spider):
             'order_by': 'publication_time',
             'hhtmFrom': 'vacancy_search_list',
             'customDomain': 1,
-        }  # параметры запроса
+        }  # хорошо бы с этим разобраться...
 
     def start_requests(self):
         request = Request(
@@ -67,7 +79,7 @@ class HhApiSpider(scrapy.Spider):
     def parse(self, response: HtmlResponse, **kwargs):
         json_response = json.loads(response.body)
 
-        # Ставим в очередь следующий запрос загрузчику
+        # Отправляем в очередь следующий запрос асинхронному загрузчику...
         pages = json_response.get('pages')     # всего страниц
         page = json_response.get('page')       # текущая страница полученного ответа
         next_page = page + 1                   # следующая (+1) страница
@@ -104,4 +116,4 @@ class HhApiSpider(scrapy.Spider):
 
         return il.load_item()
 
-    pass  # HhApiSpider -- class
+    pass  # (end) HhApiSpider -- class
