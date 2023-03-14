@@ -53,12 +53,15 @@ class HhListItemloaderSpider(scrapy.Spider):
 
     def parse(self, response):
         vacancies = response.xpath('//div[@id="a11y-main-content"]/div[contains(@class, "serp-item")]')
+
+        # Вывод на экран инфо об обрабатываемой странице и количестве вакансий на ней.
         if (page_processing := response.url.split("page=")[-1]).isdigit():
             page_processing = int(page_processing)
             page_processing += 1
         else:
             page_processing = 1
         print(f"PAGE PROCESSING: {page_processing:->5} ({self.count_pages:->5}), {len(vacancies)=}")
+
         for vacancy in vacancies:
             yield self.parse_item(vacancy)
 
@@ -68,7 +71,7 @@ class HhListItemloaderSpider(scrapy.Spider):
         else:
             self.count_pages += 1
 
-        # переход
+        # Переход? Нет! Это запрос загрузки следующей страницы асинхронно. Можно было поставить вначале метода.
         next = response.xpath('//div[@data-qa="pager-block"]/a[@data-qa="pager-next"]/@href').get()
         if next:
             yield response.follow(url=next, callback=self.parse)
@@ -76,14 +79,14 @@ class HhListItemloaderSpider(scrapy.Spider):
 
     def parse_item(self, selector):
 
-        item = ItemLoader(item=HhList_itemloader_JobItem(), selector=selector)
+        item = ItemLoader(item=HhList_itemloader_JobItem(), selector=selector)  # Указываем selector, так как получаем не весь response, а часть с указателем (селектором).
 
         item.add_xpath('_id', './/a[@data-qa="vacancy-serp__vacancy_response"]/@href')
         item.add_xpath('title', './/a[@class="serp-item__title"]/text()')
         item.add_xpath('employer', './/a[@data-qa="vacancy-serp__vacancy-employer"]/text()')
         item.add_xpath('salary_min', './/span[@data-qa="vacancy-serp__vacancy-compensation"]/text()')
-        item.add_value('salary_max', -1)
-        item.add_value('salary_cur', -1)
+        item.add_value('salary_max', -1)  # Для этих 3-х полей "salary_" указатель xpath одинаковый!
+        item.add_value('salary_cur', -1)  # Поэтому обрабатываются одной функцией...
         item.add_value('link', '')
 
         return item.load_item()
