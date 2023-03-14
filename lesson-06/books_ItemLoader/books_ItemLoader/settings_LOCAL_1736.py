@@ -101,10 +101,6 @@ ITEM_PIPELINES = {
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 # Set settings whose default value is deprecated to a future-proof value
-<<<<<<< HEAD:lesson-06/books_ItemLoader/books_ItemLoader/settings.py
 # REQUEST_FINGERPRINTER_IMPLEMENTATION = '2.7'
-=======
-REQUEST_FINGERPRINTER_IMPLEMENTATION = '2.7'
->>>>>>> lesson-08:lesson-08/api_test/api_test/settings.py
 # TWISTED_REACTOR = 'twisted.internet.asyncioreactor.AsyncioSelectorReactor'
 TWISTED_REACTOR = 'twisted.internet.selectreactor.SelectReactor'

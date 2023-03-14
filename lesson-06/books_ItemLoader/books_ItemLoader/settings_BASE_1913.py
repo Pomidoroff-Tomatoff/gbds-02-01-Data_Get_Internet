@@ -1,4 +1,4 @@
-# Scrapy settings for books_ItemLoader project
+# Scrapy settings for api_test project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -7,24 +7,17 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'books_ItemLoader'
+BOT_NAME = 'api_test'
 
-SPIDER_MODULES = ['books_ItemLoader.spiders']
-NEWSPIDER_MODULE = 'books_ItemLoader.spiders'
+SPIDER_MODULES = ['api_test.spiders']
+NEWSPIDER_MODULE = 'api_test.spiders'
 
-# LOG_LEVEL
-# https: // docs.scrapy.org / en / latest / topics / settings.html  # std-setting-LOG_LEVEL
-# In list: CRITICAL, ERROR, WARNING, INFO, DEBUG (https://docs.scrapy.org/en/latest/topics/settings.html#std-setting-LOG_LEVEL)
-LOG_LEVEL = 'ERROR'
-
-FEED_EXPORT_ENCODING = 'UTF-8'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'books_ItemLoader (+http://www.yourdomain.com)'
-USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36'
+#USER_AGENT = 'api_test (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -32,13 +25,13 @@ ROBOTSTXT_OBEY = True
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 1
+#DOWNLOAD_DELAY = 3
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
-COOKIES_ENABLED = True
+#COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False
@@ -52,20 +45,14 @@ COOKIES_ENABLED = True
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    'books_ItemLoader.middlewares.BooksItemloaderSpiderMiddleware': 543,
+#    'api_test.middlewares.ApiTestSpiderMiddleware': 543,
 #}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    'books_ItemLoader.middlewares.BooksItemloaderDownloaderMiddleware': 543,
+#    'api_test.middlewares.ApiTestDownloaderMiddleware': 543,
 #}
-
-# Двойники SPLASH:
-# Класс, используемый для обнаружения и фильтрации повторяющихся запросов.
-# DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
-# Класс, реализующий серверную часть хранилища кэша.
-# HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -76,7 +63,7 @@ COOKIES_ENABLED = True
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'books_ItemLoader.pipelines.BooksItemloaderPipeline': 300,
+   'api_test.pipelines.ApiTestPipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -101,10 +88,5 @@ ITEM_PIPELINES = {
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 # Set settings whose default value is deprecated to a future-proof value
-<<<<<<< HEAD:lesson-06/books_ItemLoader/books_ItemLoader/settings.py
-# REQUEST_FINGERPRINTER_IMPLEMENTATION = '2.7'
-=======
 REQUEST_FINGERPRINTER_IMPLEMENTATION = '2.7'
->>>>>>> lesson-08:lesson-08/api_test/api_test/settings.py
-# TWISTED_REACTOR = 'twisted.internet.asyncioreactor.AsyncioSelectorReactor'
-TWISTED_REACTOR = 'twisted.internet.selectreactor.SelectReactor'
+TWISTED_REACTOR = 'twisted.internet.asyncioreactor.AsyncioSelectorReactor'

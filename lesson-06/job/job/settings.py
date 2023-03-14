@@ -23,6 +23,23 @@ FEED_EXPORT_ENCODING = 'UTF-8'
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
 
+<<<<<<< HEAD:lesson-06/job/job/settings.py
+=======
+# SPLASH
+# Описание параметров Splash:
+# https://pypi.python.org/pypi/scrapy-splash
+# SPLASH_URL = 'http://localhost:8050'
+# SPLASH_URL = 'http://127.0.0.1:8050/run'
+SPLASH_URL = 'https://s1.onekkk.com/'
+# SPLASH_URL = 'http://192.168.0.103:8050'
+
+# Двойники: (недаюсь, что понимаю)
+# Класс, используемый для обнаружения и фильтрации повторяющихся запросов.
+DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
+# Класс, реализующий серверную часть хранилища кэша.
+HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
+
+>>>>>>> lesson-08:lesson-08/login_test/login/settings.py
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 CONCURRENT_REQUESTS = 8
 
