@@ -69,6 +69,7 @@ class HhApiSpider(scrapy.Spider):
             'hhtmFrom': 'vacancy_search_list',
             'customDomain': 1,
         }  # хорошо бы с этим разобраться...
+        #  'text': 'NAME:Аналитик', # Текст фильтра: в имени должно быть слово "Аналитик"
 
     def start_requests(self):
         request = Request(
