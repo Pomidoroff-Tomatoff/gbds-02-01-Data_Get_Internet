@@ -19,5 +19,6 @@ if __name__ == '__main__':
     settings = get_project_settings()
     runner = CrawlerRunner(settings)
     runner.crawl(HhApiSpider, keyword="Python").addBoth(lambda _: reactor.stop())
+    # runner.crawl(HhApiSpider, keyword="NAME:Аналитик").addBoth(lambda _: reactor.stop())
 
     reactor.run()
